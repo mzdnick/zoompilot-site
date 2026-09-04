@@ -96,14 +96,18 @@ const gapLabelY = y(980);
     </svg>
   </div>
   <figcaption class="tchart-cap">
-    How much steering torque your EPS can actually apply, by speed.
-    zoompilot's line is the EPS's measured ceiling — it tracks it at
-    every speed, so a stock car gains up to 44% more steering torque
-    with no hardware mods. The shaded band between the lines is that
-    gain. Stock openpilot caps every command at one
-    flat 800-count scale. Past the ceiling's ramp the EPS clamps both
-    to the same torque — the dashed stretch is the part the two lines
-    share. The ceiling and the cap are measured. Source: the
+    How much steering torque your car's electric power steering can
+    apply, at each speed. The motor is strongest at low speeds, and
+    its strength falls as you go faster. Stock openpilot caps it at
+    one fixed value — the flat line at 800 on the chart. That cap
+    sits well below the motor's real low-speed strength: strength
+    the car already has. zoompilot lets the steering use the motor's
+    full measured strength — up to 44% more steering torque than
+    stock, with no hardware mods. The shaded band between the two
+    lines is that gain. It shrinks as you speed up and is gone past
+    about 29 mph. Past that point both systems reach the car's own
+    limit; the dashed stretch is the line they share. The ceiling
+    and the cap are measured. Source: the{" "}
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
 </figure>

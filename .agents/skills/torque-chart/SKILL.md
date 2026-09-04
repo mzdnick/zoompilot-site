@@ -44,7 +44,7 @@ When a number changes in `chart-geometry.js`, update every prose copy:
 | Value | Data lives in | Prose copies |
 | --- | --- | --- |
 | 1148 (`CEIL_V[0]`) | chart-geometry.js | aria-label in TorqueChart.astro; aria-label in gen-wiki-chart.mjs |
-| 800 (`STOCK_CAP`) | chart-geometry.js | both aria-labels; figcaption ("800-count scale") |
+| 800 (`STOCK_CAP`) | chart-geometry.js | both aria-labels ("800-count scale"); figcaption ("the flat line at 800" — the caption is written for non-technical readers and does not use the word "counts") |
 | 620 (last `CEIL_V`) | chart-geometry.js | both aria-labels |
 | ~29 mph (`JOIN_V`) | computed | both aria-labels ("past about 29 mph") |
 | ~32 mph (end of `CEIL_BP`) | chart-geometry.js | both aria-labels |
