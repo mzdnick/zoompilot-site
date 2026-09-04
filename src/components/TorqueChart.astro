@@ -90,8 +90,9 @@ const gapLabelY = y(980);
       <text class="tc-text tc-axis-title" x={X1} y={Y1 + 31} text-anchor="end">
         speed · mph
       </text>
-      <text class="tc-text tc-axis-title" x={X0} y={11} text-anchor="start">
-        torque · counts
+      <!-- centered over the y tick numbers (right-aligned at X0 - 8) -->
+      <text class="tc-text tc-axis-title" x={X0 - 21} y={11} text-anchor="middle">
+        torque
       </text>
     </svg>
   </div>

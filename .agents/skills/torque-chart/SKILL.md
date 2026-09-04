@@ -35,7 +35,7 @@ So keep the figcaption sentence "The ceiling and the cap are measured." Never de
 
 - Speeds are m/s inside the file (`MPH_TO_MS = 0.44704`). The x-axis shows mph, 0–40 (`V_MAX_MPH = 40`), ticks 0/10/20/30/40. The axis stops at 40 mph because past the cliff both controllers are EPS-limited to 620 counts — there is nothing more to show.
 - Torque is in counts (the CAN unit), never Nm. The y-axis runs 400–1300 (`C_MIN`/`C_MAX` — it does not start at 0; the user chose the 400 floor to cut the chart's height), ticks 400/800/1200, canvas 640×240 (`VIEW_W`/`VIEW_H`, plot `Y0`=18 to `Y1`=202). In prose say "an 800-count scale", not "800 Nm".
-- Axis titles are horizontal and lowercase, a matched pair: "torque · counts" at the top-left above the plot, "speed · mph" at the bottom-right. Do not go back to a rotated y title.
+- Axis titles are horizontal and lowercase: "torque" at the top-left, centered over the y tick numbers (`x = X0 - 21`, the tick labels are right-aligned at `X0 - 8`), and "speed · mph" at the bottom-right. The user removed "counts" from the y title on 2026-09-04 — do not add it back. Do not go back to a rotated y title. All three renderers carry the title: TorqueChart.astro, gen-wiki-chart.mjs, and the wiki's torque-live.js.
 
 ## The numbers also live in prose
 

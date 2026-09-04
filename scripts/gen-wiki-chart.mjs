@@ -112,9 +112,10 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VI
   <text x="${X1}" y="${Y1 + 31}" text-anchor="end" fill="${
     C.text
   }" font-family='${C.mono}' font-size="10" letter-spacing="0.08em">speed · mph</text>
-  <text x="${X0}" y="11" text-anchor="start" fill="${
+  <!-- centered over the y tick numbers (right-aligned at X0 - 8) -->
+  <text x="${X0 - 21}" y="11" text-anchor="middle" fill="${
     C.text
-  }" font-family='${C.mono}' font-size="10" letter-spacing="0.08em">torque · counts</text>
+  }" font-family='${C.mono}' font-size="10" letter-spacing="0.08em">torque</text>
 </svg>
 `;
 
