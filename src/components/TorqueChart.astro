@@ -33,7 +33,7 @@ const gapLabelY = y(980);
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling: up to 44 percent more torque than stock, with no hardware mods. Stock openpilot caps every command at one flat 800-count scale; past about 29 mph the EPS clamps both to the same torque, drawn as one line the two share."
+      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling: up to 44 percent more torque than stock, with no hardware mods. Stock openpilot caps every command at one flat 800-count scale; past about 30 mph the EPS clamps both to the same torque, drawn as one line the two share."
     >
       <!-- y grid -->
       {
@@ -96,19 +96,26 @@ const gapLabelY = y(980);
     </svg>
   </div>
   <figcaption class="tchart-cap">
-    How much steering torque your car's electric power steering can
-    apply, at each speed. The motor is strongest at low speeds, and
-    its strength falls as you go faster. Stock openpilot caps it at
-    one fixed value — the flat line at 800 on the chart. That cap
-    sits well below the motor's real low-speed strength: strength
-    the car already has. zoompilot lets the steering use the motor's
-    full measured strength — up to 44% more steering torque than
-    stock, with no hardware mods. The shaded band between the two
-    lines is that gain. It shrinks as you speed up and is gone past
-    about 29 mph. Past that point both systems reach the car's own
-    limit; the dashed stretch is the line they share. The ceiling
-    and the cap are measured. Source: the{" "}
-    <a href={wikiUrl}>lateral tune measurement record</a>.
+    <p>
+      How much steering torque your electric power steering can
+      apply, by speed.
+    </p>
+    <ul>
+      <li>zoompilot — the motor's full measured strength</li>
+      <li>stock openpilot — one fixed cap, the same at every speed</li>
+      <li>
+        shaded band — the difference: up to 44% more torque, no
+        hardware mods
+      </li>
+      <li>
+        about 30 mph — both reach the car's own limit, sharing one
+        dashed line from there
+      </li>
+    </ul>
+    <p>
+      The ceiling and the cap are measured. Source: the{" "}
+      <a href={wikiUrl}>lateral tune measurement record</a>.
+    </p>
   </figcaption>
 </figure>
 

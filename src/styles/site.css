@@ -1126,6 +1126,26 @@ ol.log ul ul {
   color: var(--faint);
   max-width: 42em;
 }
+/* the caption is a lead line plus a mini legend, one bullet per
+ * chart element; the marker picks up the accent like the lines do */
+.tchart-cap p {
+  margin: 0;
+}
+.tchart-cap ul {
+  margin: 0.45rem 0;
+  padding: 0;
+  list-style: none;
+}
+.tchart-cap li {
+  position: relative;
+  padding-left: 0.95rem;
+}
+.tchart-cap li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+}
 .tchart-cap a {
   color: var(--accent);
 }

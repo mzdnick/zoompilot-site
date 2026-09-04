@@ -91,7 +91,7 @@ const xLabels = xTicks
 
 const gapLabelY = y(980);
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling: up to 44 percent more torque than stock, with no hardware mods. Stock openpilot caps every command at one flat 800-count scale; past about 29 mph the EPS clamps both to the same torque.">
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling: up to 44 percent more torque than stock, with no hardware mods. Stock openpilot caps every command at one flat 800-count scale; past about 30 mph the EPS clamps both to the same torque.">
   <title>EPS torque you can get, by speed: the measured ceiling vs stock's flat 800 cap</title>
   <rect x="0.5" y="0.5" width="${VIEW_W - 1}" height="${VIEW_H - 1}" rx="14" fill="${C.panel}" stroke="rgba(255,255,255,0.09)"/>
   ${grid}

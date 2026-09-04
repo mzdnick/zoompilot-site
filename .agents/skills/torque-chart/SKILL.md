@@ -21,7 +21,7 @@ Change geometry only in `chart-geometry.js`. Never hand-edit the wiki SVG, and n
 2. Do not draw STEER_MAX. It is the CAN scale/unit conversion, not the deliverable. The user confirmed this.
 3. Do not draw per-band demand curves. The 21 mph LAF peak in `src/data/LAF-torquegainbin.csv` is real data, but it answers the wrong question. The CSVs stay in `src/data/` as provenance for the seven-band claims in section copy. They are not drawn.
 4. Past the join (`JOIN_V`, ≈13.06 m/s ≈ 29 mph) both controllers deliver the same torque. zoompilot's own path stops there; the shared stretch (`zpSharedPath`) is drawn as accent dashes over stock's solid gray line, so the overlap reads as "both". Never draw zoompilot below stock.
-5. Minimal labels in the plot. The line labels are exactly "zoompilot" and "stock openpilot". Explanations live in the figcaption. Do not add markers, arrows, or notes without a concrete need.
+5. Minimal labels in the plot. The line labels are exactly "zoompilot" and "stock openpilot". Explanations live in the figcaption — a lead line plus a mini legend, one bullet per chart element (zoompilot / stock openpilot / shaded band / the ~30 mph join). The user chose this format after rejecting a long prose caption; do not grow it back.
 6. The gap callout at `GAP_V = 6.5` m/s is a three-line stack. Keep the wording and placement: "up to" (faint) / "{GAP_PCT}% more torque" (accent) / "with no hardware mods" (amber `--warn`).
 7. The band between the two lines is shaded (`gapPath`: the zoompilot line out to the join, back along stock, closed). It is the visual form of the 44% claim — the region tapers to nothing at the join. Keep the fill faint: accent at 12% (`C.gapFill` baked in the wiki SVG). No dashed connector line — the old one was removed when the band landed.
 
@@ -46,7 +46,7 @@ When a number changes in `chart-geometry.js`, update every prose copy:
 | 1148 (`CEIL_V[0]`) | chart-geometry.js | aria-label in TorqueChart.astro; aria-label in gen-wiki-chart.mjs |
 | 800 (`STOCK_CAP`) | chart-geometry.js | both aria-labels ("800-count scale"); figcaption ("the flat line at 800" — the caption is written for non-technical readers and does not use the word "counts") |
 | 620 (last `CEIL_V`) | chart-geometry.js | both aria-labels |
-| ~29 mph (`JOIN_V`) | computed | both aria-labels ("past about 29 mph") |
+| ~30 mph (`JOIN_V`, 29.2 exact) | computed | both aria-labels ("past about 30 mph"); caption ("about 30 mph") |
 | ~32 mph (end of `CEIL_BP`) | chart-geometry.js | both aria-labels |
 | 44% (`GAP_PCT`) | computed: `round((1148 − 800) / 800 × 100)` | both aria-labels ("44 percent"); figcaption ("44%"); the callout tspan |
 
