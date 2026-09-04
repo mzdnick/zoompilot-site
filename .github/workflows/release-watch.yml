@@ -49,11 +49,5 @@ jobs:
             exit 0
           fi
           git push origin "$BR"
-          gh pr create \
-            --head "$BR" \
-            --title "New upstream release: $VER" \
-            --body "Upstream \`version.h\` reports **$VER**, but the changelog's newest entry is older. This PR adds a skeleton entry at the top of \`src/data/changelog.js\`: fill in the real notes, adjust the date, and merge — merging deploys the site.
-
-## AI Usage
-
-Disclaimer: GLM-5.3-Flash by Z.ai was used to help develop, debug, and document this submission. All changes were reviewed and validated by a human."
+          BODY="Upstream \`version.h\` reports **$VER**, but the changelog's newest entry is older. This PR adds a skeleton entry at the top of \`src/data/changelog.js\`: fill in the real notes, adjust the date, and merge — merging deploys the site."$'\n\n'"## AI Usage"$'\n\n'"Disclaimer: GLM-5.3-Flash by Z.ai was used to help develop, debug, and document this submission. All changes were reviewed and validated by a human."
+          gh pr create --head "$BR" --title "New upstream release: $VER" --body "$BODY"

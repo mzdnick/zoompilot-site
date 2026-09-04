@@ -97,7 +97,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VI
   <line x1="${x(CLIFF_MID)}" x2="${x(CLIFF_MID)}" y1="${Y1}" y2="${Y0}" stroke="${C.warn}" stroke-dasharray="4 4" opacity="0.75"/>
   <text x="${x(CLIFF_MID) + 8}" y="${Y0 + 10}" fill="${C.warn}" font-family='${C.mono}' font-size="10.5" letter-spacing="0.06em">the cliff · ~32 mph</text>
   <path d="${scalePath}" fill="none" stroke="${C.text}" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.85"/>
-  <text x="${X1 - 4}" y="${y(1200) - 8}" text-anchor="end" fill="${
+  <text x="${X0 + 8}" y="${y(1200) - 8}" text-anchor="start" fill="${
     C.text
   }" font-family='${C.mono}' font-size="10.5">EPS scale (STEER_MAX) · measured</text>
   <path d="${stockPath}" fill="none" stroke="${C.text}" stroke-width="1.6"/>
