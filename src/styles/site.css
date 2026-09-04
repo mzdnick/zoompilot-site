@@ -977,19 +977,25 @@ ol.log ul ul {
   grid-template-columns: repeat(4, 1fr);
   gap: 1.4rem 2.2rem;
 }
+/* each stat stacks the same way — big value, then unit, then note — so
+ * the unit and note lines line up across the four columns. The big
+ * value bottoms out on a two-line slot: "any Mazda" wraps there at most
+ * widths, single-line values sit just above their unit. */
 .specstrip dt {
-  display: flex;
-  align-items: baseline;
-  gap: 0.55rem;
-  flex-wrap: wrap;
+  display: block;
 }
 .specstrip .big {
+  display: flex;
+  align-items: flex-end;
+  min-height: 2em;
   font-family: "Audiowide", var(--body);
   font-size: clamp(1.9rem, 3.4vw, 2.6rem);
   line-height: 1;
   color: var(--text);
 }
 .specstrip .unit {
+  display: block;
+  margin-top: 0.4rem;
   font-family: var(--mono);
   font-size: 0.68rem;
   letter-spacing: 0.09em;
