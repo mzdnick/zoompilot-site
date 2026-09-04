@@ -69,6 +69,8 @@ scripts/
 public/
   fonts/               self-hosted Audiowide, Inter, JetBrains Mono
   og.png               the social share card (1200x630)
+  apple-touch-icon.png generated from favicon.svg (180px, dark base)
+  _headers             security headers Cloudflare Pages serves
   favicon.svg          the paint-tile Z
 ```
 

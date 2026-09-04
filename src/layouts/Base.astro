@@ -15,6 +15,10 @@ interface Props {
 
 const { title, description } = Astro.props;
 const ogImage = new URL("og.png", Astro.site);
+/* Cloudflare Web Analytics beacon token, set as the PUBLIC_CF_BEACON
+ * secret at build time. No token, no script: the page ships without
+ * any tracking by default. */
+const beacon = import.meta.env.PUBLIC_CF_BEACON;
 ---
 
 <!doctype html>
@@ -45,6 +49,17 @@ const ogImage = new URL("og.png", Astro.site);
          script keeps it in step when the visitor picks another color -->
     <meta name="theme-color" content="#131518" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    {
+      beacon && (
+        <script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon={JSON.stringify({ token: beacon })}
+          is:inline
+        />
+      )
+    }
     <link
       rel="alternate"
       type="application/rss+xml"
