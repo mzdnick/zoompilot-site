@@ -20,7 +20,10 @@ export const repo = {
   github: "https://github.com/zoompilot/zoompilot",
   commits: "https://github.com/zoompilot/zoompilot/commits/main",
   discord: "https://discord.gg/jFWkHC2uhh",
-  wiki: "https://wiki.zoompilot.ai",
+  /* the wiki's live host today. wiki.zoompilot.ai is the intended
+   * final home but does not resolve yet; flip this one line back when
+   * the domain goes live. */
+  wiki: "https://zoompilot-wiki.pages.dev",
 };
 
 /* last known build on main. Refresh with: npm run stamp
