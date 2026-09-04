@@ -168,7 +168,7 @@ export const releases = [
     date: "2026-07-04",
     title: "Smart cruise and EPS swaps",
     summary:
-      "Curve slowdowns get usable, and older Mazdas with a 2022+ rack join in.",
+      "Curve slowdowns get usable, and older Mazdas join in with a swapped-in CX-5 motor.",
     items: [
       {
         html: `<b>Smart cruise decel overshoot.</b> New alpha toggle. The
@@ -181,8 +181,8 @@ export const releases = [
           while you press yours, and pacing adapts to how far the target is.`,
       },
       {
-        html: `<b>EPS swap support.</b> 2022+ racks in older Mazdas
-          fingerprint by the rack&rsquo;s firmware and steer to a stop.`,
+        html: `<b>EPS swap support.</b> A 2022-25 CX-5 steering motor in an
+          older Mazda fingerprints by its firmware and steers to a stop.`,
       },
       {
         html: `<b>Upstream sync.</b> Merged sunnypilot master and the opendbc

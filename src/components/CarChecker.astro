@@ -68,11 +68,12 @@ import { repo } from "../data/changelog.js";
     if (modelSel.value === "other") {
       return {
         tone: "swap",
-        head: "Supported, if the rack is swapped.",
+        head: "Supported, with the steering motor swapped.",
         body:
-          "Older Mazdas run zoompilot with a swapped 2022+ CX-5 EPS rack. " +
-          "The rack is identified by its firmware during fingerprinting. " +
-          "Steering works down to 0 mph, and alpha longitudinal is enabled.",
+          "Older Mazdas run zoompilot with the steering motor from a " +
+          "2022-25 CX-5 swapped in. Fingerprinting identifies the motor " +
+          "by its firmware. Steering works down to 0 mph, and alpha " +
+          "longitudinal is enabled.",
       };
     }
     if (year >= m.fullFrom && year <= m.fullTo) {
@@ -87,11 +88,11 @@ import { repo } from "../data/changelog.js";
     }
     return {
       tone: "no",
-      head: `Not on the stock rack — but the swap path may work.`,
+      head: `Not on the stock steering — but the swap path may work.`,
       body:
         `${m.label.charAt(0).toUpperCase() + m.label.slice(1)} ${year} ` +
-        "predates the 2022+ electric power steering rack. With a swapped " +
-        "2022+ CX-5 rack it is supported, like any older Mazda.",
+        "predates the 2022+ electric power steering. With the motor from " +
+        "a 2022-25 CX-5 swapped in, it is supported, like any older Mazda.",
     };
   }
 

@@ -10,8 +10,8 @@
     "notes": "Factory-matched specs included. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5."
   },
   {
-    "car": "Older Mazdas with a swapped 2022+ CX-5 EPS rack",
+    "car": "Older Mazdas with a swapped 2022-25 CX-5 EPS motor",
     "status": "Supported",
-    "notes": "The rack is identified by its firmware during fingerprinting. Steering works down to 0 mph, and alpha longitudinal is enabled."
+    "notes": "The motor is identified by its firmware during fingerprinting. Steering works down to 0 mph, and alpha longitudinal is enabled."
   }
 ]

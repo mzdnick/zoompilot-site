@@ -1,17 +1,18 @@
 ---
-// Spec strip: the measured headline numbers, one glance under the hero.
-// Every figure here traces to the wiki's measurement record — keep it
-// that way. (12/frame vs stock 10: features/steering; seven bands:
-// technical/lateral-tune; 0 mph: features/steering#steering-to-zero.)
+// Spec strip: the plain-English claims, one glance under the hero.
+// Benefits lead; the measured figures stay in the notes and still trace
+// to the wiki's measurement record. (12/frame vs stock 10 and the seven
+// bands: features/steering; 0 mph: features/steering#steering-to-zero;
+// the swap claim: getting-started/supported-cars.)
 const stats = [
-  { big: "12", unit: "units / frame", note: "torque command rate, up from stock openpilot's 10" },
-  { big: "7", unit: "speed bands", note: "each with its own learned factor and friction" },
-  { big: "0", unit: "mph floor", note: "steers to a standstill on the 2022+ EPS rack" },
-  { big: "3", unit: "car lines", note: "CX-5, CX-9, and EPS-swapped Mazdas" },
+  { big: "any Mazda", unit: "with the 2022+ EPS", note: "factory-fitted or swapped in from a 2022-25 CX-5 — detected automatically" },
+  { big: "faster", unit: "steering response", note: "commands the motor's full 12 units per frame — stock openpilot stops at 10" },
+  { big: "tuned", unit: "for every speed", note: "seven learned speed ranges keep the assist right, city street to highway" },
+  { big: "0", unit: "mph floor", note: "steering assist holds to a standstill" },
 ];
 ---
 
-<dl class="specstrip" aria-label="zoompilot in numbers">
+<dl class="specstrip" aria-label="zoompilot at a glance">
   {
     stats.map((s) => (
       <div>

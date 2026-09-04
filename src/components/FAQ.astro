@@ -8,9 +8,9 @@ const faqs = [
   {
     q: "Which cars does zoompilot cover?",
     a: `<strong>The CX-5 2022–2025 is the primary target</strong>, with full
-      support on the CX-9 2021–2023. Older Mazdas are covered when fitted
-      with a swapped 2022+ CX-5 EPS rack — fingerprinting identifies the
-      rack by its firmware. <a href="${repo.wiki}/getting-started/supported-cars/">Supported cars on the wiki</a>.`,
+      support on the CX-9 2021–2023. Older Mazdas are covered with the
+      steering motor from a 2022-25 CX-5 swapped in — fingerprinting
+      identifies the motor by its firmware. <a href="${repo.wiki}/getting-started/supported-cars/">Supported cars on the wiki</a>.`,
   },
   {
     q: "What hardware do I need?",
@@ -28,8 +28,9 @@ const faqs = [
   {
     q: "How is it different from sunnypilot or openpilot?",
     a: `zoompilot is a Mazda-optimized fork of sunnypilot. On top of
-      sunnypilot's features it adds the Mazda work: seven-band
-      speed-dependent torque, EPS-rail-aware limits, steering to 0 mph,
+      sunnypilot's features it adds the Mazda work: speed-dependent
+      steering torque learned across seven speed ranges, EPS-rail-aware
+      limits, steering to 0 mph,
       VIN and EPS fingerprinting, the Mazda cruise and alert fixes, and
       the car's own sensors wired in. The
       <a href="#compare">compare table</a> lays it out.`,

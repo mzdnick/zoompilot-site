@@ -45,7 +45,7 @@ const appLd = {
   applicationCategory: "Driver assistance software",
   operatingSystem: "comma 3X, comma 3",
   description:
-    "An openpilot fork for the Mazda CX-5, CX-9, and EPS-swapped models (2022-2025), tuned to the car's measured steering limits instead of another car's spec sheet.",
+    "An openpilot fork for any Mazda running the 2022-25 CX-5 electric power steering — factory-fitted or swapped in — tuned to the car's measured steering limits instead of another car's spec sheet.",
   isAccessibleForFree: true,
   url: "https://zoompilot.ai",
   sameAs: [repo.github, repo.wiki],
@@ -54,7 +54,7 @@ const appLd = {
 
 <Base
   title="zoompilot: a Mazda-optimized fork of sunnypilot"
-  description="An openpilot fork for the Mazda CX-5, CX-9, and EPS-swapped models (2022-2025), tuned to the car's measured steering limits instead of another car's spec sheet."
+  description="An openpilot fork for any Mazda running the 2022-25 CX-5 electric power steering — factory-fitted or swapped in — tuned to the car's measured steering limits instead of another car's spec sheet."
 >
   <TopBar />
 
@@ -76,16 +76,20 @@ const appLd = {
       <Ledger
         items={[
           {
+            dt: "Fits your Mazda, stock or swapped",
+            dd: "Running the electric steering motor from a 2022-25 CX-5 — factory-fitted or swapped in? zoompilot reads its firmware and steers your car to a stop, just like a factory car.",
+          },
+          {
             dt: "Speed-dependent torque",
             dd: "We encode the full torque curve, giving you more confident steering in neighborhoods and fewer wobbles on the highway.",
           },
           {
-            dt: "Speed-dependent tuning",
-            dd: "Instead of one lateral acceleration factor for all speeds, zoompilot learns across seven distinct speed ranges to match non-linear EPS behavior.",
+            dt: "Tuned for every speed",
+            dd: "One setting for all speeds is wrong at most of them. zoompilot learns seven speed ranges, each with its own steering factor and friction.",
           },
           {
-            dt: "Rate-matched commands",
-            dd: "We ask for the EPS&rsquo;s maximum 12 units per frame (up from stock openpilot&rsquo;s 10), so torque ramps up faster.",
+            dt: "Assist that builds fast",
+            dd: "zoompilot asks the steering motor for its full 12 units per frame (stock openpilot stops at 10), so help arrives the moment you turn the wheel.",
           },
           {
             dt: "Factory-matched specs",
@@ -238,7 +242,7 @@ const appLd = {
         idx="06"
         id="h-coverage"
         title="additional Mazdas covered"
-        intro="zoompilot targets Mazdas with the 2022+ electric power steering (EPS) rack. The table is synced from the wiki's supported-cars page."
+        intro="zoompilot runs on any Mazda with the 2022-25 CX-5 electric power steering (EPS) motor — factory-fitted, or swapped into an older Mazda. The table is synced from the wiki's supported-cars page."
       />
       <CarTable cars={cars} />
       <CarChecker />
