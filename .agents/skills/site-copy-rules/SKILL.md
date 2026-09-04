@@ -38,6 +38,10 @@ Every mention of Mazda alpha longitudinal must say: while it is on, the car's ra
 - `repo.wiki` in `changelog.js` points at `zoompilot-wiki.pages.dev`. Permanent, for the same reason.
 - The chart plot stays minimal — line labels only, explanation in the figcaption. The user rejected busy plots.
 
+## Voice: neutral, not first-person
+
+Write body copy in a neutral voice. Let the product act ("zoompilot wires them in") or use the passive where the work matters more than the actor ("the EPS has been reverse-engineered"). No "I/we/my" in body copy — the user removed it site-wide in 2026-09. Exception: FAQ questions and the car checker label speak in the visitor's voice ("How do I install it?", "is my mazda supported?").
+
 ## Units in prose
 
 Steering torque is in counts ("an 800-count scale"), never Nm. Speeds in mph. See the torque-chart skill for how the chart handles units.

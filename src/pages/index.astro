@@ -71,7 +71,7 @@ const appLd = {
         idx="01"
         id="h-steering"
         title="steering improvements"
-        intro="I reverse-engineered the steering hardware, then tuned zoompilot to use all of it."
+        intro="The 2022-25 CX-5 EPS has been reverse-engineered, so zoompilot can use all of its available torque."
       />
       <Ledger
         items={[
@@ -111,7 +111,7 @@ const appLd = {
         idx="02"
         id="h-cruise"
         title="radar cruise enhancements"
-        intro="I rewrote sunnypilot&rsquo;s cruise systems for Mazda. One system manages your set speed — not several features fighting for control."
+        intro="sunnypilot&rsquo;s cruise systems were rewritten for Mazda. One system manages your set speed — not several features fighting for control."
       />
       <Ledger
         items={[
@@ -148,7 +148,7 @@ const appLd = {
         items={[
           {
             dt: "Place hands on wheel alert",
-            dd: "On 2022+ cars, logs show the LKAS_BLOCK alert does not actually stop steering. I turned that false alert off. Real faults still warn you.",
+            dd: "On 2022+ cars, logs show the LKAS_BLOCK alert does not actually stop steering. zoompilot turns that false alert off. Real faults still warn you.",
           },
           {
             dt: "Steering override hysteresis",
@@ -164,7 +164,7 @@ const appLd = {
         idx="04"
         id="h-sensors"
         title="wire up sensors"
-        intro="Your CX-5 ships with sensors the stock port ignores. We wire them in."
+        intro="Your CX-5 ships with sensors the stock port ignores. zoompilot wires them in."
       />
       <Ledger
         items={[
@@ -287,8 +287,8 @@ const appLd = {
           <div>
             <strong>Pick a driving model.</strong>
             <span
-              >I run Firehose. DTRv6 is a favorite, and CD210 works well
-              with alpha longitudinal.</span
+              >Firehose is a good default. DTRv6 is a favorite, and CD210
+              works well with alpha longitudinal.</span
             >
           </div>
         </li>

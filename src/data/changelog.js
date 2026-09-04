@@ -51,8 +51,8 @@ export const releases = [
       },
       {
         html: `<b>Updated speed-dependent torque seeds.</b> Refreshed the
-          seeds using my latest learned values. Self-tune may converge a
-          little faster now.`,
+          seeds using the latest learned values from a tuned CX-5. Self-tune
+          may converge a little faster now.`,
       },
       {
         html: `<b>Comma 4 toggles for new sunnypilot features.</b>
@@ -132,7 +132,7 @@ export const releases = [
       },
       {
         html: `<b>Fresher steering seeds.</b> The CX-5 2022 starting values
-          come straight off my car&rsquo;s learned data, so a new install
+          come straight off a real car&rsquo;s learned data, so a new install
           steers like a tuned car much sooner.`,
       },
       {
