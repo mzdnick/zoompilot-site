@@ -9,18 +9,17 @@
  * will ask for.
  *   - The EPS ceiling is measured (EPS_CEILING_LOOKUP in the fork's
  *     opendbc mazda/values.py): near 1148 counts at neighborhood
- *     speeds, nine points down to 620 by the cliff.
+ *     speeds, nine points down to 620 by ~32 mph (the "cliff").
  *   - zoompilot clamps its commands to that ceiling and scales them
  *     with the real STEER_MAX schedule, so its available torque IS
  *     the ceiling.
  *   - Stock openpilot caps every command at one flat STEER_MAX = 800
  *     (values-open.py), so it strands the difference below the cliff;
  *     above the cliff the EPS clamps it to the same 620.
- * The learned per-band gain tables (LAF-torquegainbin.csv,
- * frictionbin.csv, seven bins 6.5..35 m/s) stay in src/data/ as the
- * record behind the speed-dependent tune; they are not drawn here.
- * The axis stops at ~45 mph: past the cliff both controllers are
- * EPS-limited to the same 620 counts.
+ * The axis stops at 40 mph: past the cliff both controllers are
+ * EPS-limited to the same 620 counts. The learned per-band gain
+ * tables (LAF-torquegainbin.csv, frictionbin.csv) stay in src/data/
+ * as the record behind the speed-dependent tune; they are not drawn.
  */
 
 export const X0 = 46,
@@ -29,26 +28,13 @@ export const X0 = 46,
   Y1 = 282,
   VIEW_W = 640,
   VIEW_H = 320,
-  V_MAX = 20,
+  MPH_TO_MS = 0.44704,
+  V_MAX_MPH = 40,
+  V_MAX = V_MAX_MPH * MPH_TO_MS,
   C_MAX = 1300;
-
-export const CLIFF_LO = 14.2,
-  CLIFF_HI = 14.5,
-  CLIFF_MID = (CLIFF_LO + CLIFF_HI) / 2;
 
 export const x = (v) => X0 + (v / V_MAX) * (X1 - X0);
 export const y = (c) => Y1 - (c / C_MAX) * (Y1 - Y0);
-
-/* the seven learned bands (CX-5, device cache 2026-08-19) */
-export const bands = [
-  { ms: 6.5, mph: 15 },
-  { ms: 9.5, mph: 21 },
-  { ms: 12.0, mph: 27 },
-  { ms: 16.4, mph: 37 },
-  { ms: 21.0, mph: 47 },
-  { ms: 28.0, mph: 63 },
-  { ms: 35.0, mph: 78 },
-];
 
 /* the EPS's own applied-torque ceiling, nine measured points */
 const CEIL_BP = [8.0, 8.5, 9.4, 10.3, 11.2, 12.1, 13.0, 13.9, 14.5];
@@ -99,12 +85,7 @@ export const zpPath =
 export const stockPath =
   `M ${x(0).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} ` +
   `L ${x(JOIN_V).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} ` +
-  pts(
-    CEIL_BP.filter((v) => v > JOIN_V).map((v, i, a) => [
-      v,
-      ceiling(v),
-    ]),
-  ) +
+  pts(CEIL_BP.filter((v) => v > JOIN_V).map((v) => [v, ceiling(v)])) +
   ` L ${x(V_MAX).toFixed(1)} ${y(CEIL_V[CEIL_V.length - 1]).toFixed(1)}`;
 
 /* the +torque gap callout sits in the flat region before the ramp */
@@ -113,12 +94,9 @@ export const GAP_PCT = Math.round(
   ((CEIL_V[0] - STOCK_CAP) / STOCK_CAP) * 100,
 );
 
-export const xTicks = [
-  { v: 0, mph: "0" },
-  { v: 5, mph: "11" },
-  { v: 10, mph: "22" },
-  { v: 15, mph: "34" },
-  { v: 20, mph: "45" },
-];
+export const xTicks = [0, 10, 20, 30, 40].map((mph) => ({
+  mph,
+  v: mph * MPH_TO_MS,
+}));
 
 export const yTicks = [400, 800, 1200];

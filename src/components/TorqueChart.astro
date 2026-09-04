@@ -11,7 +11,6 @@ import {
   Y1,
   VIEW_W,
   VIEW_H,
-  CLIFF_MID,
   x,
   y,
   zpPath,
@@ -24,6 +23,7 @@ import {
 import { repo } from "../data/changelog.js";
 
 const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
+const gapLabelY = y(980);
 ---
 
 <figure class="tchart">
@@ -31,7 +31,7 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Available steering torque from the EPS across speed, up to about 45 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by the cliff at about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about a third less torque than the EPS can deliver below the cliff; above the cliff the EPS clamps both to the same 620."
+      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about 44 percent less torque below the ramp; past it the EPS clamps both to the same 620."
     >
       <!-- y grid -->
       {
@@ -44,17 +44,6 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
           </g>
         ))
       }
-      <!-- the cliff: where the ceiling bottoms out -->
-      <line
-        class="tc-cliff"
-        x1={x(CLIFF_MID)}
-        x2={x(CLIFF_MID)}
-        y1={Y1}
-        y2={Y0}
-      />
-      <text class="tc-cliff-label" x={x(CLIFF_MID) + 8} y={Y0 + 10}>
-        the cliff · ~32 mph
-      </text>
       <!-- the gap stock leaves on the table, drawn in the flat region -->
       <line
         class="tc-gap"
@@ -63,18 +52,19 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
         y1={y(1148)}
         y2={y(800)}
       />
-      <text class="tc-zp-label" x={x(GAP_V) + 8} y={y(980)}>
-        +{GAP_PCT}% torque
+      <text class="tc-zp-label" x={x(GAP_V) + 8} y={gapLabelY}>
+        <tspan x={x(GAP_V) + 8} dy="0">{GAP_PCT}% more torque</tspan>
+        <tspan x={x(GAP_V) + 8} dy="13">than stock</tspan>
       </text>
       <!-- stock: one flat cap, then EPS-limited like everyone -->
       <path id="tc-stock" class="tc-stock" d={stockPath} />
       <text class="tc-stock-label" x={X0 + 8} y={y(800) + 16} text-anchor="start">
-        stock openpilot · one flat 800-count cap
+        stock openpilot
       </text>
       <!-- zoompilot: the full measured ceiling -->
       <path id="tc-zp" class="tc-zp" d={zpPath} />
       <text class="tc-zp-label" x={X0 + 8} y={y(1148) - 8} text-anchor="start">
-        zoompilot · the full measured ceiling
+        zoompilot
       </text>
       <!-- axes -->
       <line class="tc-axis" x1={X0} x2={X1} y1={Y1} y2={Y1} />
@@ -104,17 +94,18 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
         transform={`translate(14 ${Y1 - 6}) rotate(-90)`}
         text-anchor="start"
       >
-        available EPS torque · CAN counts
+        available EPS torque
       </text>
     </svg>
   </div>
   <figcaption class="tchart-cap">
     How much steering torque your EPS can actually apply, by speed.
-    zoompilot's controller tracks the measured ceiling at every speed.
-    Stock openpilot caps every command at one flat 800-count scale, so
-    below the cliff it leaves about a third of the available torque
-    unused; past the cliff the EPS clamps both to the same 620. The
-    ceiling, the cliff, and the cap are measured. Source: the
+    zoompilot's line is the EPS's measured ceiling — it tracks it at
+    every speed. Stock openpilot caps every command at one flat
+    800-count scale, so below the ceiling's ramp it leaves about a
+    third of the available torque unused; past the ramp the EPS clamps
+    both to the same 620. The ceiling and the cap are measured.
+    Source: the
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
 </figure>
