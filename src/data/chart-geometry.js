@@ -25,16 +25,18 @@
 export const X0 = 46,
   X1 = 628,
   Y0 = 18,
-  Y1 = 282,
+  Y1 = 202,
   VIEW_W = 640,
-  VIEW_H = 320,
+  VIEW_H = 240,
   MPH_TO_MS = 0.44704,
   V_MAX_MPH = 40,
   V_MAX = V_MAX_MPH * MPH_TO_MS,
+  C_MIN = 400,
   C_MAX = 1300;
 
 export const x = (v) => X0 + (v / V_MAX) * (X1 - X0);
-export const y = (c) => Y1 - (c / C_MAX) * (Y1 - Y0);
+export const y = (c) =>
+  Y1 - ((c - C_MIN) / (C_MAX - C_MIN)) * (Y1 - Y0);
 
 /* the EPS's own applied-torque ceiling, nine measured points */
 export const CEIL_BP = [8.0, 8.5, 9.4, 10.3, 11.2, 12.1, 13.0, 13.9, 14.5];
@@ -106,6 +108,11 @@ export const stockPath =
   `L ${x(JOIN_V).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} ` +
   pts(CEIL_BP.filter((v) => v > JOIN_V).map((v) => [v, ceiling(v)])) +
   ` L ${x(V_MAX).toFixed(1)} ${y(CEIL_V[CEIL_V.length - 1]).toFixed(1)}`;
+
+/* the shaded band between the two lines: the torque stock strands
+ * and zoompilot delivers. It tapers to nothing at the join */
+export const gapPath =
+  zpPath + ` L ${x(0).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} Z`;
 
 /* the +torque gap callout sits in the flat region before the ramp */
 export const GAP_V = 6.5;

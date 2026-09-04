@@ -23,6 +23,7 @@ Change geometry only in `chart-geometry.js`. Never hand-edit the wiki SVG, and n
 4. Past the join (`JOIN_V`, ≈13.06 m/s ≈ 29 mph) both controllers deliver the same torque. zoompilot's own path stops there; the shared stretch (`zpSharedPath`) is drawn as accent dashes over stock's solid gray line, so the overlap reads as "both". Never draw zoompilot below stock.
 5. Minimal labels in the plot. The line labels are exactly "zoompilot" and "stock openpilot". Explanations live in the figcaption. Do not add markers, arrows, or notes without a concrete need.
 6. The gap callout at `GAP_V = 6.5` m/s is a three-line stack. Keep the wording and placement: "up to" (faint) / "{GAP_PCT}% more torque" (accent) / "with no hardware mods" (amber `--warn`).
+7. The band between the two lines is shaded (`gapPath`: the zoompilot line out to the join, back along stock, closed). It is the visual form of the 44% claim — the region tapers to nothing at the join. Keep the fill faint: accent at 12% (`C.gapFill` baked in the wiki SVG). No dashed connector line — the old one was removed when the band landed.
 
 ## Honesty rule
 
@@ -33,7 +34,8 @@ So keep the figcaption sentence "The ceiling and the cap are measured." Never de
 ## Units
 
 - Speeds are m/s inside the file (`MPH_TO_MS = 0.44704`). The x-axis shows mph, 0–40 (`V_MAX_MPH = 40`), ticks 0/10/20/30/40. The axis stops at 40 mph because past the cliff both controllers are EPS-limited to 620 counts — there is nothing more to show.
-- Torque is in counts (the CAN unit), never Nm. Y ticks 400/800/1200, `C_MAX = 1300`. In prose say "an 800-count scale", not "800 Nm".
+- Torque is in counts (the CAN unit), never Nm. The y-axis runs 400–1300 (`C_MIN`/`C_MAX` — it does not start at 0; the user chose the 400 floor to cut the chart's height), ticks 400/800/1200, canvas 640×240 (`VIEW_W`/`VIEW_H`, plot `Y0`=18 to `Y1`=202). In prose say "an 800-count scale", not "800 Nm".
+- Axis titles are horizontal and lowercase, a matched pair: "torque · counts" at the top-left above the plot, "speed · mph" at the bottom-right. Do not go back to a rotated y title.
 
 ## The numbers also live in prose
 
@@ -62,8 +64,9 @@ Then commit in BOTH repos (this one and `../zoompilot-wiki`). The wiki embeds th
 
 - Draw-in: `.tc-zp` and `.tc-stock` use `stroke-dasharray: 1400`; the `drawn` class (added by the IntersectionObserver in TorqueChart.astro) animates the offset. If the paths get much longer, raise the 1400.
 - Shared tail: `.tc-zp-shared` fades in with `transition: opacity 0.6s ease 0.9s` after the draw-in. Forced visible under `prefers-reduced-motion`.
+- Gap band: `.tc-gap-fill` fades in with the draw-in (`opacity 0.8s ease 0.5s`), also forced visible under `prefers-reduced-motion`. The wiki's live copy styles it in `docs/stylesheets/custom.css` (`.tc-live .tc-gap-fill`); the wiki live chart draws it with no fade.
 - Narrow screens: `.tchart-frame` gets `overflow-x: auto` and the svg `min-width: 36rem` — the chart scrolls sideways so the labels stay legible. Keep this.
-- `.tc-band`, `.tc-cliff`, `.tc-cliff-label` are leftovers from removed chart versions. The cliff marker was removed on purpose. Do not resurrect them.
+- `.tc-band`, `.tc-cliff`, `.tc-cliff-label` are leftovers from removed chart versions. The cliff marker was removed on purpose. Do not resurrect them. (`.tc-gap` — the old dashed connector — was removed with the band; do not bring it back either.)
 
 ## Verify
 

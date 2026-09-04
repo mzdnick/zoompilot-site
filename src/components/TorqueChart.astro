@@ -16,6 +16,7 @@ import {
   zpPath,
   zpSharedPath,
   stockPath,
+  gapPath,
   GAP_V,
   GAP_PCT,
   xTicks,
@@ -45,14 +46,8 @@ const gapLabelY = y(980);
           </g>
         ))
       }
-      <!-- the gap stock leaves on the table, drawn in the flat region -->
-      <line
-        class="tc-gap"
-        x1={x(GAP_V)}
-        x2={x(GAP_V)}
-        y1={y(1148)}
-        y2={y(800)}
-      />
+      <!-- the torque stock strands, shaded from the axis to the join -->
+      <path class="tc-gap-fill" d={gapPath} />
       <text class="tc-zp-label" x={x(GAP_V) + 8} y={gapLabelY}>
         <tspan class="tc-gap-note" x={x(GAP_V) + 8} dy="0">up to</tspan>
         <tspan x={x(GAP_V) + 8} dy="13">{GAP_PCT}% more torque</tspan>
@@ -95,12 +90,8 @@ const gapLabelY = y(980);
       <text class="tc-text tc-axis-title" x={X1} y={Y1 + 31} text-anchor="end">
         speed · mph
       </text>
-      <text
-        class="tc-text tc-axis-title"
-        transform={`translate(14 ${Y1 - 6}) rotate(-90)`}
-        text-anchor="start"
-      >
-        available EPS torque
+      <text class="tc-text tc-axis-title" x={X0} y={11} text-anchor="start">
+        torque · counts
       </text>
     </svg>
   </div>
@@ -108,7 +99,8 @@ const gapLabelY = y(980);
     How much steering torque your EPS can actually apply, by speed.
     zoompilot's line is the EPS's measured ceiling — it tracks it at
     every speed, so a stock car gains up to 44% more steering torque
-    with no hardware mods. Stock openpilot caps every command at one
+    with no hardware mods. The shaded band between the lines is that
+    gain. Stock openpilot caps every command at one
     flat 800-count scale. Past the ceiling's ramp the EPS clamps both
     to the same torque — the dashed stretch is the part the two lines
     share. The ceiling and the cap are measured. Source: the
