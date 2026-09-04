@@ -30,7 +30,13 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      # never block a content deploy on a stamp refresh: if the GitHub
+      # API hiccups, build with the committed stamp (the page also
+      # refreshes it at runtime)
       - run: npm run stamp
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - run: npm run build
       - name: deploy to Cloudflare Pages
         run: npx wrangler pages deploy dist --project-name zoompilot-site --branch main

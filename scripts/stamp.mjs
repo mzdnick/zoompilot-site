@@ -14,8 +14,16 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const target = join(here, "..", "src", "data", "changelog.js");
 
+/* In CI, GitHub supplies GITHUB_TOKEN; authenticating lifts the API
+ * limit from 60 requests/hour per IP to 1,000, which matters on shared
+ * runner IPs. Local runs just go unauthenticated. */
+const headers = process.env.GITHUB_TOKEN
+  ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+  : {};
+
 const res = await fetch(
   "https://api.github.com/repos/zoompilot/zoompilot/commits?per_page=1",
+  { headers },
 );
 if (!res.ok) {
   throw new Error(`GitHub API returned ${res.status}`);
