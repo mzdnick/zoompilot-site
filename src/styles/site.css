@@ -1060,6 +1060,12 @@ ol.log ul ul {
   stroke-dasharray: 3 4;
   opacity: 0.85;
 }
+.tc-ceiling {
+  fill: none;
+  stroke: var(--dim);
+  stroke-width: 1.4;
+  opacity: 0.9;
+}
 .tc-zp {
   fill: none;
   stroke: var(--accent);

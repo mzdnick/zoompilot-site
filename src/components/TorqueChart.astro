@@ -17,6 +17,7 @@ import {
   shownBands,
   zpPath,
   stockPath,
+  ceilingPath,
   scalePath,
   xTicks,
   yTicks,
@@ -31,7 +32,7 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Steering torque response across speed, one corner demand held constant, up to about 45 mph. Stock openpilot applies one factor at every speed: a flat line. zoompilot keeps a learned tune for each speed band below the cliff: a stepped line that sits above stock at neighborhood speeds. At the cliff, about 32 mph, it steps down and from there matches stock exactly — past the cliff the two lines are one. Measured anchors: the EPS scale step from 1200 to 800 counts, drawn dashed, and the learned band boundaries marked on the speed axis."
+      aria-label="Steering torque across speed, one held corner demand, up to about 45 mph. Measured curves: the EPS torque ceiling, near 1148 counts at neighborhood speeds and ramping down nine measured points to 620 by the cliff at about 32 mph; the STEER_MAX CAN scale, 1200 counts stepping to 800 across the cliff window — a unit conversion and PID limit, not a torque step. zoompilot's line comes from the learned per-band gain and friction: it rises through neighborhood speeds, stays continuous through the cliff window, and settles onto stock's level past about 37 mph. Stock openpilot applies one factor at every speed: a flat line."
     >
       <!-- y grid -->
       {
@@ -67,21 +68,25 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
       <text class="tc-cliff-label" x={x(CLIFF_MID) + 8} y={Y0 + 10}>
         the cliff · ~32 mph
       </text>
-      <!-- measured: the EPS's own scale, which steps at the cliff -->
+      <!-- the CAN scale: unit conversion and PID limits, not torque -->
       <path id="tc-scale" class="tc-scale" d={scalePath} />
       <text class="tc-text" x={X0 + 8} y={y(1200) - 8} text-anchor="start">
-        EPS scale (STEER_MAX) · measured
+        STEER_MAX · CAN scale · conversion + PID limits
+      </text>
+      <!-- measured: the EPS's own applied-torque ceiling -->
+      <path id="tc-ceiling" class="tc-ceiling" d={ceilingPath} />
+      <text class="tc-text" x={X1 - 4} y={y(620) - 10} text-anchor="end">
+        EPS ceiling · measured
       </text>
       <!-- old behavior: one factor for every speed -->
       <path id="tc-stock" class="tc-stock" d={stockPath} />
-      <text class="tc-stock-label" x={X1 - 4} y={y(700) + 16} text-anchor="end">
+      <text class="tc-stock-label" x={X1 - 4} y={y(560) + 16} text-anchor="end">
         stock openpilot · one factor, all speeds
       </text>
-      <!-- new behavior: a learned tune per band below the cliff,
-           stock-identical above it -->
+      <!-- new behavior: the learned tables, one held demand -->
       <path id="tc-zp" class="tc-zp" d={zpPath} />
-      <text class="tc-zp-label" x={x(0.6)} y={y(950) - 10}>
-        zoompilot · a learned tune per band, stock past the cliff
+      <text class="tc-zp-label" x={x(0.6)} y={y(900) - 22}>
+        zoompilot · learned per-band torque
       </text>
       <!-- axes -->
       <line class="tc-axis" x1={X0} x2={X1} y1={Y1} y2={Y1} />
@@ -116,12 +121,14 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
     </svg>
   </div>
   <figcaption class="tchart-cap">
-    One corner demand, held constant. Stock openpilot asks for the same
-    torque at every speed — short of the wheel in parking lots. zoompilot
-    learns a tune per band below the cliff, then hands back to stock above
-    it: more steering at low speed, identical behavior everywhere else.
-    The two response lines are schematic; the cliff position, the scale
-    step, and the band boundaries are measured. Source: the
+    One corner demand, held constant. The counts it needs come from the
+    EPS's own learned tables — gain and friction per speed band,
+    interpolated in count space, so the applied torque stays continuous
+    through the cliff: the STEER_MAX step changes the CAN scale and the
+    PID limits, not the torque. Stock openpilot carries one factor and
+    one flat 800-count scale — blind to both the ceiling and the scale.
+    The ceiling, the scale step, and the band boundaries are measured;
+    the demand level is illustrative. Source: the
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
 </figure>

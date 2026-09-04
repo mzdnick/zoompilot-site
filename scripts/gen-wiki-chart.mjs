@@ -27,6 +27,7 @@ import {
   shownBands,
   zpPath,
   stockPath,
+  ceilingPath,
   scalePath,
   xTicks,
   yTicks,
@@ -89,8 +90,8 @@ const xLabels = xTicks
   )
   .join("\n  ");
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Steering torque response across speed, up to about 45 mph. Stock openpilot holds one factor at every speed; zoompilot keeps a learned tune per band below the cliff near 32 mph, where the measured EPS scale steps from 1200 to 800 counts, and matches stock exactly above it.">
-  <title>EPS torque response across speed: one factor vs a tune per band, stock past the cliff</title>
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Steering torque across speed, one held corner demand, up to about 45 mph. Measured curves: the EPS torque ceiling ramping from about 1148 counts to 620 by the cliff near 32 mph, and the STEER_MAX CAN scale stepping 1200 to 800 there — a unit conversion and PID limit, not a torque step. zoompilot's line comes from the learned per-band gain and friction, continuous through the cliff window and settling onto stock's flat single-factor level past about 37 mph.">
+  <title>EPS torque across speed: learned per-band gain vs one factor, under the measured ceiling</title>
   <rect x="0.5" y="0.5" width="${VIEW_W - 1}" height="${VIEW_H - 1}" rx="14" fill="${C.panel}" stroke="rgba(255,255,255,0.09)"/>
   ${grid}
   ${bandLines}
@@ -99,15 +100,19 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VI
   <path d="${scalePath}" fill="none" stroke="${C.text}" stroke-width="1.2" stroke-dasharray="3 4" opacity="0.85"/>
   <text x="${X0 + 8}" y="${y(1200) - 8}" text-anchor="start" fill="${
     C.text
-  }" font-family='${C.mono}' font-size="10.5">EPS scale (STEER_MAX) · measured</text>
+  }" font-family='${C.mono}' font-size="10.5">STEER_MAX · CAN scale · conversion + PID limits</text>
+  <path d="${ceilingPath}" fill="none" stroke="${C.label}" stroke-width="1.4" opacity="0.9"/>
+  <text x="${X1 - 4}" y="${y(620) - 10}" text-anchor="end" fill="${
+    C.label
+  }" font-family='${C.mono}' font-size="10.5">EPS ceiling · measured</text>
   <path d="${stockPath}" fill="none" stroke="${C.text}" stroke-width="1.6"/>
-  <text x="${X1 - 4}" y="${y(700) + 16}" text-anchor="end" fill="${
+  <text x="${X1 - 4}" y="${y(560) + 16}" text-anchor="end" fill="${
     C.label
   }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">stock openpilot · one factor, all speeds</text>
   <path d="${zpPath}" fill="none" stroke="${C.accent}" stroke-width="2"/>
-  <text x="${x(0.6)}" y="${y(950) - 10}" fill="${
+  <text x="${x(0.6)}" y="${y(900) - 22}" fill="${
     C.accent
-  }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">zoompilot · a learned tune per band, stock past the cliff</text>
+  }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">zoompilot · learned per-band torque</text>
   <line x1="${X0}" x2="${X1}" y1="${Y1}" y2="${Y1}" stroke="${C.axis}"/>
   <line x1="${X0}" x2="${X0}" y1="${Y0}" y2="${Y1}" stroke="${C.axis}"/>
   ${xLabels}
