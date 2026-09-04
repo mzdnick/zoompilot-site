@@ -1064,6 +1064,19 @@ ol.log ul ul {
   stroke: var(--accent);
   stroke-width: 2;
 }
+/* the stretch both controllers share: accent dashes over stock's
+ * solid line, so the overlap reads as "both" */
+.tc-zp-shared {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-dasharray: 7 6;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.9s;
+}
+.tchart-frame.drawn .tc-zp-shared {
+  opacity: 1;
+}
 .tc-stock {
   fill: none;
   stroke: var(--faint);
@@ -1507,12 +1520,16 @@ details.older ol.log {
 /* ---------- motion: one switch for everything new ---------- */
 @media (prefers-reduced-motion: reduce) {
   .tchart-frame .tc-zp,
-  .tchart-frame .tc-stock {
+  .tchart-frame .tc-stock,
+  .tchart-frame .tc-zp-shared {
     transition: none;
   }
   .tchart-frame:not(.drawn) .tc-zp,
   .tchart-frame:not(.drawn) .tc-stock {
     stroke-dashoffset: 0;
+  }
+  .tchart-frame .tc-zp-shared {
+    opacity: 1;
   }
   .toggle,
   .toggle::after,

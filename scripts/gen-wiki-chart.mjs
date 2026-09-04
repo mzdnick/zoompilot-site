@@ -24,6 +24,7 @@ import {
   x,
   y,
   zpPath,
+  zpSharedPath,
   stockPath,
   GAP_V,
   GAP_PCT,
@@ -92,6 +93,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VI
     C.label
   }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">stock openpilot</text>
   <path d="${zpPath}" fill="none" stroke="${C.accent}" stroke-width="2"/>
+  <path d="${zpSharedPath}" fill="none" stroke="${C.accent}" stroke-width="2" stroke-dasharray="7 6"/>
   <text x="${X0 + 8}" y="${y(1148) - 8}" text-anchor="start" fill="${
     C.accent
   }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">zoompilot</text>

@@ -56,8 +56,9 @@ function interp(bp, vals, v) {
 const ceiling = (v) => interp(CEIL_BP, CEIL_V, v);
 
 /* where the flat 800 cap stops binding: the EPS starts clamping stock
- * there, so both lines run together from this speed up */
-const JOIN_V = (() => {
+ * there, so both controllers deliver the same torque from this speed
+ * up and the two lines share one visible line */
+export const JOIN_V = (() => {
   for (let i = 0; i < CEIL_BP.length - 1; i++) {
     if (CEIL_V[i] >= STOCK_CAP && CEIL_V[i + 1] < STOCK_CAP) {
       const t = (CEIL_V[i] - STOCK_CAP) / (CEIL_V[i] - CEIL_V[i + 1]);
@@ -74,11 +75,29 @@ const pts = (pairs) =>
     .map(([v, c]) => `L ${x(v).toFixed(1)} ${y(c).toFixed(1)}`)
     .join(" ");
 
+/* zoompilot's own stretch: the ceiling up to where stock's cap stops
+ * binding */
+const ownPts = [
+  ...CEIL_BP.map((v, i) => [v, CEIL_V[i]]).filter(([v]) => v < JOIN_V),
+  [JOIN_V, STOCK_CAP],
+];
+
+/* the shared stretch: past the join, stock is EPS-clamped to the same
+ * ceiling, so both controllers trace this one line */
+const sharedPts = [
+  [JOIN_V, STOCK_CAP],
+  ...CEIL_BP.map((v, i) => [v, CEIL_V[i]]).filter(([v]) => v > JOIN_V),
+  [V_MAX, CEIL_V[CEIL_V.length - 1]],
+];
+
 /* zoompilot: the full measured ceiling (flat clamps outside 8-14.5) */
 export const zpPath =
-  `M ${x(0).toFixed(1)} ${y(CEIL_V[0]).toFixed(1)} ` +
-  pts(CEIL_BP.map((v, i) => [v, CEIL_V[i]])) +
-  ` L ${x(V_MAX).toFixed(1)} ${y(CEIL_V[CEIL_V.length - 1]).toFixed(1)}`;
+  `M ${x(0).toFixed(1)} ${y(CEIL_V[0]).toFixed(1)} ` + pts(ownPts);
+
+/* the shared tail, drawn dashed over stock's solid line */
+export const zpSharedPath = `M ${x(JOIN_V).toFixed(1)} ${y(
+  STOCK_CAP,
+).toFixed(1)} ` + pts(sharedPts.slice(1));
 
 /* stock: flat 800 until the EPS starts clamping it, the ceiling
  * from there up */

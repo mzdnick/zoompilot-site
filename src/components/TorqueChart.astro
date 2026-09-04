@@ -14,6 +14,7 @@ import {
   x,
   y,
   zpPath,
+  zpSharedPath,
   stockPath,
   GAP_V,
   GAP_PCT,
@@ -31,7 +32,7 @@ const gapLabelY = y(980);
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about 44 percent less torque below the ramp; past it the EPS clamps both to the same 620."
+      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about 44 percent less torque below the ramp; past about 29 mph the EPS clamps both to the same torque, drawn as one line the two share."
     >
       <!-- y grid -->
       {
@@ -63,6 +64,8 @@ const gapLabelY = y(980);
       </text>
       <!-- zoompilot: the full measured ceiling -->
       <path id="tc-zp" class="tc-zp" d={zpPath} />
+      <!-- the stretch both controllers share, dashed over stock -->
+      <path id="tc-zp-shared" class="tc-zp-shared" d={zpSharedPath} />
       <text class="tc-zp-label" x={X0 + 8} y={y(1148) - 8} text-anchor="start">
         zoompilot
       </text>
@@ -103,8 +106,9 @@ const gapLabelY = y(980);
     zoompilot's line is the EPS's measured ceiling — it tracks it at
     every speed. Stock openpilot caps every command at one flat
     800-count scale, so below the ceiling's ramp it leaves about a
-    third of the available torque unused; past the ramp the EPS clamps
-    both to the same 620. The ceiling and the cap are measured.
+    third of the available torque unused. Past the ramp the EPS clamps
+    both to the same torque — the dashed stretch is the part the two
+    lines share. The ceiling and the cap are measured.
     Source: the
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
