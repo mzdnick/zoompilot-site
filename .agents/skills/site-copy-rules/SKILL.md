@@ -34,8 +34,8 @@ Every mention of Mazda alpha longitudinal must say: while it is on, the car's ra
 
 ## Deliberate oddities — do not "fix"
 
-- Canonical and og URLs are pinned to `https://zoompilot.ai` (`CANON` in `Base.astro`) while `astro.config.mjs` serves sitemap and RSS from the pages.dev host. This is a contributor rebuild; zoompilot.ai is the intended final home (README, "Custom domain").
-- `repo.wiki` in `changelog.js` points at `zoompilot-wiki.pages.dev` with a flip-back comment. Change that one line when `wiki.zoompilot.ai` resolves.
+- Canonical, og:url, and schema URLs follow the deploy host (`Astro.site`, set from `CF_PAGES_URL` in `astro.config.mjs`). A zoompilot.ai custom domain was declined in 2026-09; the pages.dev hosts are permanent. Do not plan or do domain or DNS work for either repo.
+- `repo.wiki` in `changelog.js` points at `zoompilot-wiki.pages.dev`. Permanent, for the same reason.
 - The chart plot stays minimal — line labels only, explanation in the figcaption. The user rejected busy plots.
 
 ## Units in prose

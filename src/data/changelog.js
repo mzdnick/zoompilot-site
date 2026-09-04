@@ -20,9 +20,8 @@ export const repo = {
   github: "https://github.com/zoompilot/zoompilot",
   commits: "https://github.com/zoompilot/zoompilot/commits/main",
   discord: "https://discord.gg/jFWkHC2uhh",
-  /* the wiki's live host today. wiki.zoompilot.ai is the intended
-   * final home but does not resolve yet; flip this one line back when
-   * the domain goes live. */
+  /* the wiki's only host. A wiki.zoompilot.ai custom domain was
+   * declined in 2026-09, so this link is permanent. */
   wiki: "https://zoompilot-wiki.pages.dev",
 };
 

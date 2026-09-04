@@ -7,11 +7,10 @@ coverage, compare, questions, setup, install, first drive, changelog),
 and the footer paint line.
 
 The docs live in the wiki, published at
-https://zoompilot-wiki.pages.dev (the wiki.zoompilot.ai domain is the
-intended home but does not resolve yet; `src/data/changelog.js`
-`repo.wiki` carries the live host — flip that one line when the domain
-goes live). This site links into the wiki and syncs structured content
-both directions (see "Wiki collaboration").
+https://zoompilot-wiki.pages.dev. A wiki.zoompilot.ai custom domain
+was declined in 2026-09, so the pages.dev host is the wiki's
+permanent home. This site links into the wiki and syncs structured
+content both directions (see "Wiki collaboration").
 
 ## Quick start
 
@@ -144,23 +143,11 @@ deploy goes wrong.
 
 ### Custom domain
 
-This is a contributor rebuild: the zoompilot.ai zone is owned and run by
-the project maintainer, so this deploy lives at
-https://zoompilot-site.pages.dev until the maintainer adopts it. The
-page metadata (og:url, canonical base in `astro.config.mjs`) keeps
-`https://zoompilot.ai` on purpose — it is the intended final home.
-
-Adoption paths, maintainer's choice:
-
-1. Point the Pages project at this repository (Connect to Git), deploy
-   into the account that runs the zoompilot.ai zone, then add
-   `zoompilot.ai` as the project's custom domain.
-2. Keep this deploy and repoint DNS at it. Works only if the zone
-   lives in the same Cloudflare account as this Pages project;
-   otherwise the maintainer adds the contributor to the account or
-   pulls the repo into their own.
-
-Do not add unrelated domains to this project.
+None. This deploy lives at https://zoompilot-site.pages.dev
+permanently. Adopting a zoompilot.ai custom domain was declined in
+2026-09, so page metadata (canonical, og:url) follows the deploy host
+(`Astro.site`) instead. Do not plan DNS or custom-domain work for
+this project.
 
 ### Git integration (alternative)
 

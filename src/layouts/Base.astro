@@ -3,11 +3,12 @@
 // global stylesheet. The paint must be applied before first render,
 // so that script stays inline in <head>.
 //
-// Canonical URLs stay pinned to zoompilot.ai — the intended final
-// home (see astro.config.mjs for why Astro.site differs).
+// Canonical and og:url follow the deploy host (Astro.site — see
+// astro.config.mjs), so they resolve wherever Cloudflare serves the
+// site. A zoompilot.ai custom domain was declined in 2026-09.
 import "../styles/site.css";
 
-const CANON = "https://zoompilot.ai";
+const CANON = Astro.site;
 interface Props {
   title: string;
   description: string;
