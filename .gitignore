@@ -3,4 +3,4 @@ dist/
 .astro/
 .DS_Store
 .playwright-mcp/
-torque-chart-after.png
+torque-chart-*.png
