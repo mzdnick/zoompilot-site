@@ -20,9 +20,9 @@ Each claim is stated in several files. Change all copies or none:
 
 | Claim | Files |
 | --- | --- |
-| 44% more torque | computed `GAP_PCT` in `chart-geometry.js`; aria-label + figcaption in `TorqueChart.astro`; aria-label in `gen-wiki-chart.mjs` — number sync detail in the torque-chart skill |
+| 44% more torque | computed `GAP_PCT` in `chart-geometry.js`; aria-label + figcaption in `TorqueChart.astro`; aria-label in `gen-wiki-chart.mjs`; section 01 in `index.astro` — number sync detail in the torque-chart skill |
 | 12 units per frame, stock stops at 10 | `SpecStrip.astro`, section 01 in `index.astro`, the rate row in `Compare.astro` (cells "10" / "10" / "12") |
-| Seven learned speed bands | `SpecStrip.astro`, section 01 in `index.astro`, `FAQ.astro`, `Compare.astro`, `SetupDemo.astro` |
+| Seven learned speed bands | `SpecStrip.astro`, `FAQ.astro`, `Compare.astro`, `SetupDemo.astro` (the old section-01 instance is sidelined, commented out in `index.astro`) |
 | Steering to 0 mph | `SpecStrip.astro`, `FirstDrive.astro`, `CarChecker.astro` (twice), `FAQ.astro`, `Compare.astro` ("steer-to-zero") |
 | Full support: CX-5 2022–2025, CX-9 2021–2023 | `supported-cars.json` (synced from the wiki), `CarChecker.astro` `MODELS.fullFrom`/`fullTo` (the year logic lives here, not in the JSON), `FAQ.astro` |
 
