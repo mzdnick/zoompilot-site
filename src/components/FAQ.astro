@@ -1,0 +1,112 @@
+---
+// FAQ: the questions the Discord answers most, with FAQPage
+// structured data so the answers can surface in search results.
+// Answers stay in step with the wiki; each one links to its source page.
+import { installUrl, repo } from "../data/changelog.js";
+
+const faqs = [
+  {
+    q: "Which cars does zoompilot cover?",
+    a: `<strong>The CX-5 2022–2025 is the primary target</strong>, with full
+      support on the CX-9 2021–2023. Older Mazdas are covered when fitted
+      with a swapped 2022+ CX-5 EPS rack — fingerprinting identifies the
+      rack by its firmware. <a href="${repo.wiki}/getting-started/supported-cars/">Supported cars on the wiki</a>.`,
+  },
+  {
+    q: "What hardware do I need?",
+    a: `A <a href="https://comma.ai/shop">comma 3X or comma 3</a> with the
+      Mazda harness and mount. Nothing else — the whole install happens on
+      the device, with no computer.`,
+  },
+  {
+    q: "How do I install it?",
+    a: `Factory-reset the device first, then choose the custom software
+      option and enter <code>${installUrl}</code>. The first boot takes a
+      few minutes. The full walkthrough:
+      <a href="${repo.wiki}/getting-started/install/">install on the wiki</a>.`,
+  },
+  {
+    q: "How is it different from sunnypilot or openpilot?",
+    a: `zoompilot is a Mazda-optimized fork of sunnypilot. On top of
+      sunnypilot's features it adds the Mazda work: seven-band
+      speed-dependent torque, EPS-rail-aware limits, steering to 0 mph,
+      VIN and EPS fingerprinting, the Mazda cruise and alert fixes, and
+      the car's own sensors wired in. The
+      <a href="#compare">compare table</a> lays it out.`,
+  },
+  {
+    q: "Does it cost anything?",
+    a: `No. zoompilot is an open-source fork, free to install. You provide
+      the comma device. Star
+      <a href="${repo.github}">the repo</a> if it serves you well.`,
+  },
+  {
+    q: "Is it safe?",
+    a: `It is experimental Level-2 driver assistance: <strong>you drive,
+      follow the law, and carry all the risk.</strong> Driver monitoring
+      stays active. One caveat matters most: with alpha longitudinal
+      enabled, the car's radar is turned off — no AEB, no forward
+      collision alerts. Read the
+      <a href="${repo.wiki}/safety/">safety page</a> before enabling it.`,
+  },
+  {
+    q: "Do updates arrive on their own?",
+    a: `Yes. On the <code>zoompilot/main</code> release channel the device
+      repoints itself at the next start. A <code>develop</code> branch
+      exists for daily work, but it is less tested.`,
+  },
+  {
+    q: "My dash shows cruise, LKAS, or radar errors. Now what?",
+    a: `Turn the car completely off for 15 minutes to reset. If it keeps
+      happening, update to the latest release, then ask on
+      <a href="${repo.discord}">Discord</a> with your release version and a
+      route ID. The
+      <a href="${repo.wiki}/troubleshooting/">troubleshooting page</a>
+      covers the starter fixes.`,
+  },
+];
+
+/* FAQPage structured data for search engines */
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: {
+      "@type": "Answer",
+      /* strip the inline markup for the machine-readable answer */
+      text: f.a.replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim(),
+    },
+  })),
+};
+---
+
+<section id="faq" aria-labelledby="h-faq">
+  <div class="sec">
+    <p class="idx">08</p>
+    <h2 id="h-faq">questions</h2>
+    <p class="intro">
+      The ones the Discord answers most. Every answer links to the page
+      with the full story.
+    </p>
+  </div>
+  <div class="faq">
+    {
+      faqs.map((f) => (
+        <details>
+          <summary>
+            <h3>{f.q}</h3>
+          </summary>
+          <p set:html={f.a} />
+        </details>
+      ))
+    }
+  </div>
+</section>
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(faqLd)}
+  is:inline
+/>

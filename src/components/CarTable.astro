@@ -1,0 +1,51 @@
+---
+// Supported cars as a status-pill table, synced from the wiki. The
+// sync script (scripts/sync-wiki.mjs) owns the data; this component
+// only maps each free-text status to a pill tone.
+import { repo } from "../data/changelog.js";
+
+interface Props {
+  cars: { car: string; status: string; notes: string }[];
+}
+const { cars } = Astro.props;
+
+/* status text -> pill tone. "primary" outranks "full" in the wording. */
+function tone(status: string) {
+  const s = status.toLowerCase();
+  if (s.includes("primary")) return "primary";
+  if (s.includes("full")) return "full";
+  return "supported";
+}
+const TONE_LABEL: Record<string, string> = {
+  primary: "primary target",
+  full: "full support",
+  supported: "supported",
+};
+---
+
+<div class="table-scroll">
+  <table class="cartable">
+    <thead>
+      <tr>
+        <th scope="col">car</th>
+        <th scope="col">status</th>
+        <th scope="col">notes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        cars.map((c) => (
+          <tr>
+            <th scope="row">{c.car}</th>
+            <td>
+              <span class={`pill pill-${tone(c.status)}`}>
+                {TONE_LABEL[tone(c.status)]}
+              </span>
+            </td>
+            <td>{c.notes}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>

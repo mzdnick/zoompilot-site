@@ -1,0 +1,1644 @@
+/*
+ * zoompilot.ai — recreated as an Astro site.
+ *
+ * The design language: a near-black canvas tinted by the car's paint,
+ * Inter body text, JetBrains Mono details, Audiowide for the wordmark,
+ * glossy CX-5 paint chips, pill CTAs dipped in paint, hairline dividers,
+ * and a spec-sheet ledger for the feature sections.
+ *
+ * Layers:
+ *   1. Paint tokens     — the 2022-2025 CX-5 factory line, one var set
+ *                         per paint. JS flips --paint/--accent at runtime.
+ *   2. Derived colors   — everything mixed from the chosen paint.
+ *   3. Chrome           — sticky top bar with scroll-spy, footer paint line.
+ *   4. Hero             — wordmark, CTAs, the chip wall.
+ *   5. Sections         — numbered spec-sheet sections, ledgers, steps,
+ *                         alpha warning, install card, changelog.
+ *   6. Extras           — section index grid, settings mock, responsive.
+ */
+
+/* ============================================================
+ * 1. Paint tokens — the 2022-2025 CX-5 line (keep in step with
+ *    src/data/paints.js: same codes, same order)
+ * ============================================================ */
+:root {
+  --p46v: #a01c2f;
+  --p46v-hi: #d0414f;
+  --p46v-lo: #5f0d1a;
+  --p46v-t: #e05a6b;
+  --p45p: #85898e;
+  --p45p-hi: #a9adb2;
+  --p45p-lo: #54575b;
+  --p45p-t: #b0b4b9;
+  --p47c: #566269;
+  --p47c-hi: #79868f;
+  --p47c-lo: #333d43;
+  --p47c-t: #9fb0b5;
+  --p45b: #2e5a8b;
+  --p45b-hi: #4a7fb8;
+  --p45b-lo: #17304d;
+  --p45b-t: #6ea3dd;
+  --p46g: #55585a;
+  --p46g-hi: #777b7e;
+  --p46g-lo: #323436;
+  --p46g-t: #9da2a6;
+  --p25d: #f3f2ed;
+  --p25d-hi: #ffffff;
+  --p25d-lo: #cfceca;
+  --p25d-t: #f3f2ed;
+  --p42m: #1c2f4e;
+  --p42m-hi: #33507e;
+  --p42m-lo: #0e1728;
+  --p42m-t: #7f9dcb;
+  --p41w: #121316;
+  --p41w-hi: #2c2e33;
+  --p41w-lo: #000000;
+  --p41w-t: #aab2bd;
+  --ink-dark: #14161a; /* text on the light paints */
+
+  /* the chosen paint. default 46G: must agree with the aria-pressed
+   * chip + its caption in the hero; the theme-color meta in the layout
+   * is a hand-computed --bg snapshot for it. */
+  --paint: var(--p46g);
+  --paint-hi: var(--p46g-hi);
+  --paint-lo: var(--p46g-lo);
+  --accent: var(--p46g-t);
+  --cta-text: #fff;
+
+  /* ============================================================
+   * 2. Derived colors — everything mixed from the chosen paint
+   * ============================================================ */
+  --bg: color-mix(in srgb, var(--paint) 18%, #04060a);
+  --hair: color-mix(in srgb, var(--accent) 26%, transparent);
+  --hair-strong: color-mix(in srgb, var(--accent) 44%, transparent);
+
+  /* constants: the device screen stays jet black in any car */
+  --card: #07080a;
+  --card-line: rgba(255, 255, 255, 0.07);
+  --card-shadow: 0 16px 34px rgba(2, 5, 10, 0.5);
+  --text: rgba(255, 255, 255, 0.93);
+  --dim: #a9aeb8;
+  --faint: #7e8695;
+  --warn: #e8a13c; /* hazard amber for the alpha callouts */
+  --warn-hair: color-mix(in srgb, var(--warn) 36%, transparent);
+
+  --body: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  --col: 58rem;
+  --gutter: 1.4rem;
+  --edge: max(var(--gutter), calc((100vw - var(--col)) / 2));
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html {
+  scroll-behavior: smooth;
+  /* keep anchor targets clear of the sticky top bar */
+  scroll-padding-top: 4.2rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  background:
+    radial-gradient(
+        80rem 42rem at 74% -12rem,
+        color-mix(in srgb, var(--paint-hi) 30%, transparent),
+        transparent 70%
+      )
+      no-repeat,
+    var(--bg);
+  color: var(--dim);
+  font-family: var(--body);
+  font-size: 1.02rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.45s ease;
+}
+::selection {
+  background: var(--paint);
+  color: var(--cta-text);
+}
+
+a {
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--hair-strong);
+  text-underline-offset: 3px;
+}
+a:hover {
+  text-decoration-color: var(--accent);
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+strong {
+  color: var(--text);
+  font-weight: 600;
+}
+code {
+  font-family: var(--mono);
+}
+
+.skip {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  background: var(--card);
+  color: var(--text);
+  padding: 0.6rem 1rem;
+  border-radius: 0 0 0.6rem 0;
+}
+.skip:focus-visible {
+  left: 0;
+}
+
+/* ============================================================
+ * 3. Chrome — sticky top bar with scroll-spy
+ * ============================================================ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.4rem;
+  padding: 1.05rem var(--edge) 0.95rem;
+  border-bottom: 1px solid var(--hair);
+  background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  transition: background-color 0.45s ease;
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .topbar {
+    background: var(--bg);
+  }
+}
+.topbar .id {
+  font-family: "Audiowide", var(--body);
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.topbar nav {
+  display: flex;
+  align-items: baseline;
+  gap: 1.35rem;
+  flex-wrap: wrap;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+}
+.topbar nav a {
+  color: var(--faint);
+  text-decoration: none;
+}
+.topbar nav a:hover {
+  color: var(--text);
+}
+/* scroll-spy: the section currently on screen */
+.topbar nav a[aria-current="true"] {
+  color: var(--accent);
+}
+/* external links (wiki, github, discord) leave the site */
+.topbar nav a.ext::after {
+  content: "↗";
+  margin-left: 0.3em;
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+/* build stamp: quiet metadata, loud only on hover */
+.topbar nav a.build {
+  font-family: var(--mono);
+  color: var(--faint);
+}
+.topbar nav a.build:hover {
+  color: var(--accent);
+}
+
+/* ============================================================
+ * 4. Hero — wordmark, copy, the chip wall
+ * ============================================================ */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: 2.5rem 4rem;
+  padding: 4.2rem var(--edge) 3.4rem;
+}
+h1.mark {
+  margin-top: 0.7rem;
+  font-family: "Audiowide", var(--body);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1;
+  font-size: clamp(2.6rem, 6.5vw, 4.6rem);
+  color: var(--text);
+}
+.hero-copy .tagline {
+  margin-top: 1rem;
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.hero-copy p.lede {
+  margin-top: 1.1rem;
+  max-width: 32em;
+  font-size: 0.98rem;
+}
+.cta-row {
+  margin-top: 1.8rem;
+  display: flex;
+  align-items: center;
+  gap: 1.3rem;
+  flex-wrap: wrap;
+}
+/* anything dipped in the chosen paint: hero cta + copy button */
+.cta,
+.urlbar button {
+  font-weight: 600;
+  color: var(--cta-text);
+  background: linear-gradient(
+    180deg,
+    var(--paint-hi),
+    var(--paint) 55%,
+    var(--paint-lo)
+  );
+  border-radius: 999px;
+}
+.cta:hover,
+.urlbar button:hover {
+  filter: brightness(1.1);
+}
+.cta {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 0.96rem;
+  padding: 0.85rem 2.2rem;
+  box-shadow:
+    0 6px 22px color-mix(in srgb, var(--paint) 40%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.cta-row .alt {
+  font-size: 0.8rem;
+  color: var(--faint);
+}
+
+/* the paint wall: eight real chips, 2022-2025 CX-5 line.
+ * tap one and the page wears it. */
+.paintwall {
+  justify-self: end;
+  width: min(26rem, 100%);
+}
+.chips {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.8rem;
+}
+.chip {
+  position: relative;
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 1rem;
+  cursor: pointer;
+  background: linear-gradient(150deg, var(--ch), var(--cb) 52%, var(--cl));
+  box-shadow:
+    0 10px 22px rgba(2, 5, 10, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+/* the light catching the clearcoat */
+.chip::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.3),
+    rgba(255, 255, 255, 0) 46%
+  );
+  pointer-events: none;
+}
+/* mica flake */
+.chip::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: radial-gradient(
+    rgba(255, 255, 255, 0.5) 0.5px,
+    transparent 0.6px
+  );
+  background-size: 3px 3px;
+  opacity: 0.1;
+  pointer-events: none;
+}
+.chip:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 16px 30px rgba(2, 5, 10, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.chip[aria-pressed="true"] {
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--text),
+    0 10px 22px rgba(2, 5, 10, 0.5);
+}
+.chip .code {
+  position: absolute;
+  left: 0.65rem;
+  bottom: 0.5rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  color: var(--ink, #fff);
+  opacity: 0.55;
+}
+.c46v {
+  --cb: var(--p46v);
+  --ch: var(--p46v-hi);
+  --cl: var(--p46v-lo);
+}
+.c45p {
+  --cb: var(--p45p);
+  --ch: var(--p45p-hi);
+  --cl: var(--p45p-lo);
+}
+.c47c {
+  --cb: var(--p47c);
+  --ch: var(--p47c-hi);
+  --cl: var(--p47c-lo);
+}
+.c45b {
+  --cb: var(--p45b);
+  --ch: var(--p45b-hi);
+  --cl: var(--p45b-lo);
+}
+.c46g {
+  --cb: var(--p46g);
+  --ch: var(--p46g-hi);
+  --cl: var(--p46g-lo);
+}
+.c25d {
+  --cb: var(--p25d);
+  --ch: var(--p25d-hi);
+  --cl: var(--p25d-lo);
+}
+.c42m {
+  --cb: var(--p42m);
+  --ch: var(--p42m-hi);
+  --cl: var(--p42m-lo);
+}
+.c41w {
+  --cb: var(--p41w);
+  --ch: var(--p41w-hi);
+  --cl: var(--p41w-lo);
+}
+/* the light paints print their code in dark ink;
+   keep in step with dark:true in paints.js */
+.c45p,
+.c25d {
+  --ink: var(--ink-dark);
+}
+
+.wearing {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--text);
+  text-align: right;
+}
+.wearing::before {
+  content: "wearing ";
+  color: var(--faint);
+}
+
+/* chips boot in like a terminal color test */
+@keyframes boot {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+}
+.chips .chip {
+  animation: boot 0.4s both;
+}
+.chips .chip:nth-child(2) {
+  animation-delay: 0.05s;
+}
+.chips .chip:nth-child(3) {
+  animation-delay: 0.1s;
+}
+.chips .chip:nth-child(4) {
+  animation-delay: 0.15s;
+}
+.chips .chip:nth-child(5) {
+  animation-delay: 0.2s;
+}
+.chips .chip:nth-child(6) {
+  animation-delay: 0.25s;
+}
+.chips .chip:nth-child(7) {
+  animation-delay: 0.3s;
+}
+.chips .chip:nth-child(8) {
+  animation-delay: 0.35s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .chips .chip {
+    animation: none;
+  }
+  .chip,
+  .chip:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ============================================================
+ * 5a. Section index — the jump grid under the hero
+ * ============================================================ */
+.secindex {
+  padding: 0 var(--edge);
+}
+.secindex .secindex-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--faint);
+  text-transform: uppercase;
+}
+.secindex-grid {
+  margin-top: 0.9rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+  gap: 0.6rem;
+}
+.secindex-grid a {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: 0.6rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--hair);
+  border-radius: 0.7rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.secindex-grid a:hover {
+  border-color: var(--hair-strong);
+  background: color-mix(in srgb, var(--paint) 8%, transparent);
+}
+.secindex-grid .n {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+}
+.secindex-grid .t {
+  font-size: 0.85rem;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+ * 5b. Sections — the spec sheet
+ * ============================================================ */
+main section {
+  padding: 3.1rem var(--edge) 0.4rem;
+}
+.sec .idx {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+.sec h2 {
+  margin-top: 0.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  font-size: clamp(1.55rem, 3.2vw, 2.05rem);
+  color: var(--text);
+}
+.sec .intro {
+  margin-top: 0.7rem;
+  max-width: 42em;
+  font-size: 0.96rem;
+}
+/* deep link to the matching wiki page, shown after a section body */
+.wiki-more {
+  margin-top: 1.3rem;
+  font-size: 0.85rem;
+  color: var(--faint);
+}
+.wiki-more a {
+  color: var(--accent);
+}
+
+/* feature ledger: one hairline row per feature, no lights, no cards */
+dl.ledger {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--hair);
+}
+dl.ledger > div {
+  display: grid;
+  grid-template-columns: minmax(11rem, 15rem) 1fr;
+  gap: 0.4rem 2.2rem;
+  padding: 1.05rem 0 1.15rem;
+  border-bottom: 1px solid var(--hair);
+}
+dl.ledger dt {
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+dl.ledger dd {
+  font-size: 0.94rem;
+  line-height: 1.58;
+  max-width: 40em;
+}
+dl.ledger dd code {
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+/* alpha longitudinal: the one loudly-flagged feature */
+.alpha-sec h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.alpha-tag {
+  font-size: 0.62rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--warn);
+  border: 1px solid var(--warn-hair);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+}
+.alpha-warn {
+  margin-top: 1.3rem;
+  max-width: 44em;
+  border: 1px solid var(--warn-hair);
+  border-left: 3px solid var(--warn);
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
+  padding: 1rem 1.25rem 1.1rem;
+  font-size: 0.93rem;
+}
+.alpha-warn .warn-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+.alpha-warn > p + p {
+  margin-top: 0.55rem;
+}
+.alpha-sec .credit {
+  margin-top: 1.3rem;
+  max-width: 42em;
+  font-size: 0.88rem;
+  color: var(--faint);
+}
+
+/* ============================================================
+ * 5c. Setup — steps and the settings mock
+ * ============================================================ */
+/* the settings suite, drawn as a static screen mock (the original site
+ * plays a screen recording; drop one into public/screens/ and swap this
+ * out when available) */
+.demo {
+  margin-top: 1.6rem;
+  max-width: 52rem;
+}
+.settings-mock {
+  background: #000;
+  border: 1px solid var(--card-line);
+  border-radius: 1.5rem;
+  box-shadow: var(--card-shadow);
+  padding: 1.4rem 1.5rem 1.2rem;
+  font-size: 0.9rem;
+}
+.settings-mock .mock-title {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  color: var(--faint);
+  margin-bottom: 0.6rem;
+}
+.settings-mock ol {
+  list-style: none;
+}
+.settings-mock li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.4rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.settings-mock li .lbl {
+  color: var(--text);
+}
+.settings-mock li .sub {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--faint);
+}
+.toggle {
+  flex: 0 0 auto;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  width: 2.3rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+.toggle::after {
+  content: "";
+  position: absolute;
+  top: 0.14rem;
+  left: 0.16rem;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  background: var(--faint);
+}
+.toggle.on {
+  background: linear-gradient(180deg, var(--paint-hi), var(--paint));
+  border-color: transparent;
+}
+/* the knob slides by transform, so it animates; keep left anchored */
+.toggle.on::after {
+  left: 0.16rem;
+  right: auto;
+  background: #fff;
+  transform: translateX(1.13rem);
+}
+
+ol.steps {
+  list-style: none;
+  max-width: 44em;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--hair);
+  counter-reset: step;
+}
+ol.steps li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 2.4rem 1fr;
+  gap: 1rem;
+  padding: 0.95rem 0 1.05rem;
+  border-bottom: 1px solid var(--hair);
+}
+ol.steps li::before {
+  content: counter(step, decimal-leading-zero);
+  font-size: 0.8rem;
+  color: var(--accent);
+  padding-top: 0.25rem;
+}
+ol.steps strong {
+  display: block;
+}
+ol.steps span {
+  font-size: 0.93rem;
+}
+
+/* ============================================================
+ * 5d. Install — the device screen
+ * ============================================================ */
+.device-screen {
+  margin-top: 1.6rem;
+  max-width: 42rem;
+  background:
+    radial-gradient(
+      120% 90% at 50% 0%,
+      rgba(255, 255, 255, 0.045),
+      rgba(255, 255, 255, 0) 55%
+    ),
+    var(--card);
+  border: 1px solid var(--card-line);
+  border-radius: 2.2rem;
+  padding: 1.7rem 1.7rem 1.6rem;
+  box-shadow: var(--card-shadow);
+}
+.device-screen .screen-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  color: var(--faint);
+}
+.urlbar {
+  margin-top: 1rem;
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 0.85rem 0.85rem 0.85rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.urlbar code {
+  font-size: 0.95rem;
+  color: var(--text);
+  flex: 1 1 15rem;
+  word-break: break-all;
+}
+.urlbar code::before {
+  content: "> ";
+  color: var(--faint);
+}
+.urlbar button {
+  cursor: pointer;
+  border: 0;
+  font-family: var(--body);
+  font-size: 0.88rem;
+  padding: 0.65rem 1.4rem;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+.device-screen .hint {
+  margin-top: 0.9rem;
+  font-size: 0.88rem;
+}
+/* left-rule callouts (shared with .setup-note) */
+.setup-note,
+.warn {
+  border-left: 2px solid var(--hair-strong);
+  padding-left: 1rem;
+}
+.setup-note {
+  margin-top: 1.4rem;
+  max-width: 42em;
+  font-size: 0.93rem;
+}
+.warn {
+  margin-top: 1.6rem;
+  max-width: 42rem;
+  font-size: 0.9rem;
+}
+
+/* ============================================================
+ * 5e. Changelog
+ * ============================================================ */
+.log-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  max-width: 46em;
+}
+.log-head .stamp {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  text-decoration: none;
+}
+.log-head .stamp:hover {
+  color: var(--text);
+}
+.log-head .stamp::before {
+  content: "build ";
+  color: var(--faint);
+}
+ol.log {
+  list-style: none;
+  margin-top: 1.5rem;
+  max-width: 46em;
+  border-top: 1px solid var(--hair);
+}
+ol.log > li {
+  display: grid;
+  grid-template-columns: 7.2rem 1fr;
+  gap: 1.1rem;
+  padding: 0.95rem 0 1.05rem;
+  border-bottom: 1px solid var(--hair);
+}
+ol.log time {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  padding-top: 0.25rem;
+}
+/* release identity: the version string is what the device's home
+ * screen shows, so it leads; the date is secondary. Entries from
+ * before the prebuilt channel have no version and keep a bare
+ * accent-colored date. */
+ol.log .rel {
+  display: grid;
+  align-content: start;
+  gap: 0.1rem;
+  padding-top: 0.25rem;
+}
+ol.log .rel .ver {
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+}
+ol.log .rel time {
+  font-size: 0.7rem;
+  color: var(--faint);
+  padding-top: 0;
+}
+ol.log strong {
+  display: block;
+}
+ol.log > li > div > span {
+  font-size: 0.92rem;
+}
+/* the changes themselves: one scannable line each */
+ol.log ul {
+  list-style: none;
+  margin-top: 0.85rem;
+  display: grid;
+  gap: 0.5rem;
+}
+ol.log ul li {
+  display: block;
+  position: relative;
+  padding: 0 0 0 1rem;
+  border: 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+ol.log ul li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.65;
+}
+ol.log ul b {
+  color: var(--text);
+  font-weight: 600;
+}
+/* nested lists (items inside an item) */
+ol.log ul ul {
+  margin-top: 0.5rem;
+}
+
+/* ============================================================
+ * 6. Footer — the paint line signs the page off
+ * ============================================================ */
+.paintline {
+  margin-top: 5rem;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--p46v) 0 12.5%,
+    var(--p45p) 0 25%,
+    var(--p47c) 0 37.5%,
+    var(--p45b) 0 50%,
+    var(--p46g) 0 62.5%,
+    var(--p25d) 0 75%,
+    var(--p42m) 0 87.5%,
+    var(--p41w) 0 100%
+  );
+}
+.foot {
+  padding: 2.3rem var(--edge) 3.2rem;
+  font-size: 0.9rem;
+}
+.foot .thanks {
+  max-width: 44em;
+}
+.foot p + p {
+  margin-top: 0.8em;
+}
+.foot .signoff {
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+/* ============================================================
+ * 7. New sections — spec strip, measurement chart, car table,
+ *    checker, compare, faq, interactive mock, changelog extras
+ * ============================================================ */
+
+/* screen-reader-only utility (table headers that repeat context) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* wide tables scroll sideways instead of breaking the page */
+.table-scroll {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+}
+
+/* ---------- spec strip ---------- */
+.specstrip {
+  margin: 0 var(--edge);
+  padding: 1.6rem 0 1.7rem;
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem 2.2rem;
+}
+.specstrip dt {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+.specstrip .big {
+  font-family: "Audiowide", var(--body);
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  line-height: 1;
+  color: var(--text);
+}
+.specstrip .unit {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  color: var(--accent);
+}
+.specstrip dd {
+  margin-top: 0.45rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--dim);
+}
+
+/* ---------- measurement chart (section 01) ---------- */
+.tchart {
+  margin-top: 1.8rem;
+  max-width: 46rem;
+}
+.tchart-frame {
+  border: 1px solid var(--hair);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--card) 55%, transparent);
+  padding: 0.9rem 0.7rem 0.45rem;
+}
+.tchart-frame svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tc-grid {
+  stroke: rgba(255, 255, 255, 0.06);
+  stroke-width: 1;
+}
+.tc-axis {
+  stroke: rgba(255, 255, 255, 0.16);
+  stroke-width: 1;
+}
+.tc-text {
+  font-family: var(--mono);
+  font-size: 11px;
+  fill: var(--faint);
+}
+.tc-axis-title {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+.tc-band {
+  stroke: var(--accent);
+  opacity: 0.1;
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+}
+.tc-cliff {
+  stroke: var(--warn);
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  opacity: 0.75;
+}
+.tc-cliff-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  fill: var(--warn);
+}
+.tc-scale {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 1.2;
+  stroke-dasharray: 3 4;
+  opacity: 0.85;
+}
+.tc-zp {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.tc-stock {
+  fill: none;
+  stroke: var(--faint);
+  stroke-width: 1.6;
+}
+.tc-stock-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  fill: var(--faint);
+}
+.tc-zp-label {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  fill: var(--accent);
+}
+/* draw-in: the response lines trace themselves once, on reveal */
+.tc-zp,
+.tc-stock {
+  stroke-dasharray: 1400;
+  stroke-dashoffset: 0;
+}
+.tchart-frame:not(.drawn) .tc-zp,
+.tchart-frame:not(.drawn) .tc-stock {
+  stroke-dashoffset: 1400;
+}
+.tchart-frame.drawn .tc-zp,
+.tchart-frame.drawn .tc-stock {
+  transition: stroke-dashoffset 1.3s ease-out;
+}
+
+.tchart-cap {
+  margin-top: 0.9rem;
+  font-size: 0.85rem;
+  color: var(--faint);
+  max-width: 42em;
+}
+.tchart-cap a {
+  color: var(--accent);
+}
+
+/* ---------- supported-cars table (section 06) ---------- */
+.cartable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.cartable th,
+.cartable td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.95rem 1.4rem 1rem 0;
+  border-bottom: 1px solid var(--hair);
+}
+.cartable thead th {
+  font-size: 0.7rem;
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--faint);
+  padding-top: 0;
+  text-transform: uppercase;
+}
+.cartable tbody th {
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.cartable td:last-child {
+  max-width: 30em;
+}
+.cartable .pill {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 0.28rem 0.7rem;
+  white-space: nowrap;
+}
+.pill-primary {
+  color: var(--cta-text);
+  background: linear-gradient(180deg, var(--paint-hi), var(--paint) 55%, var(--paint-lo));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+.pill-full {
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+.pill-supported {
+  color: var(--dim);
+  border: 1px solid var(--hair-strong);
+}
+
+/* ---------- support checker (section 06) ---------- */
+.checker {
+  margin-top: 1.7rem;
+  max-width: 34rem;
+  border: 1px solid var(--hair);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--card) 55%, transparent);
+  padding: 1.15rem 1.3rem 1.25rem;
+}
+.checker-label {
+  font-family: var(--mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.checker-controls {
+  margin-top: 0.9rem;
+  display: flex;
+  gap: 1.1rem;
+  flex-wrap: wrap;
+}
+.checker-controls label {
+  flex: 1 1 9rem;
+  display: grid;
+  gap: 0.4rem;
+}
+.checker-controls label span {
+  font-size: 0.72rem;
+  font-family: var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.checker-controls select {
+  font-family: var(--body);
+  font-size: 0.92rem;
+  color: var(--text);
+  background: #000;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.7rem;
+}
+.checker-result {
+  margin-top: 1rem;
+  border-top: 1px solid var(--hair);
+  padding-top: 0.95rem;
+  font-size: 0.92rem;
+}
+.checker-result .ck-head {
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.checker-result .ck-head.ck-yes {
+  color: var(--accent);
+}
+.checker-result .ck-head.ck-no {
+  color: var(--warn);
+}
+.checker-result .ck-body {
+  margin-top: 0.45rem;
+  line-height: 1.55;
+}
+.checker-result .ck-links {
+  margin-top: 0.7rem;
+  font-size: 0.82rem;
+  color: var(--faint);
+}
+.checker-result .ck-links a {
+  color: var(--accent);
+}
+
+/* ---------- compare table (section 07) ---------- */
+table.compare {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.compare th,
+.compare td {
+  text-align: left;
+  padding: 0.8rem 1.1rem 0.85rem 0;
+  border-bottom: 1px solid var(--hair);
+}
+.compare thead th {
+  font-size: 0.74rem;
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  padding-top: 0;
+}
+.compare thead th a {
+  color: var(--faint);
+}
+.compare thead th.zp a,
+.compare thead th.zp {
+  color: var(--accent);
+}
+.compare tbody th {
+  font-weight: 500;
+  color: var(--text);
+  max-width: 22em;
+}
+.compare td {
+  white-space: nowrap;
+}
+.compare .yes {
+  color: var(--accent);
+  font-weight: 600;
+}
+.compare .yes i {
+  font-style: normal;
+  font-size: 0.66em;
+  font-family: var(--mono);
+  letter-spacing: 0.06em;
+  margin-left: 0.3em;
+  opacity: 0.8;
+}
+.compare .no {
+  color: var(--faint);
+  opacity: 0.6;
+}
+.compare .num {
+  font-family: var(--mono);
+  font-size: 0.85em;
+  color: var(--dim);
+}
+.compare td.zp,
+.compare tbody th + td + td + td.zp {
+  border-left: 1px solid var(--hair-strong);
+  padding-left: 1.1rem;
+}
+.compare tbody td.zp .yes,
+.compare tbody td.zp .num {
+  color: var(--text);
+}
+.compare-note {
+  margin-top: 1.1rem;
+  max-width: 46em;
+  font-size: 0.82rem;
+  color: var(--faint);
+}
+.compare-note a {
+  color: var(--accent);
+}
+
+/* ---------- faq (section 08) ---------- */
+.faq {
+  margin-top: 1.5rem;
+  max-width: 46em;
+  border-top: 1px solid var(--hair);
+}
+.faq details {
+  border-bottom: 1px solid var(--hair);
+}
+.faq summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 1.05rem;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq summary h3 {
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.faq summary::after {
+  content: "+";
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  color: var(--accent);
+  flex: 0 0 auto;
+  transition: transform 0.18s ease;
+}
+.faq details[open] summary::after {
+  transform: rotate(45deg);
+}
+.faq details p {
+  padding: 0 2rem 1.15rem 0;
+  font-size: 0.94rem;
+  line-height: 1.58;
+}
+.faq details p code {
+  font-size: 0.85em;
+  color: var(--accent);
+}
+
+/* ---------- interactive settings mock (section 09) ---------- */
+.settings-mock .toggle {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.toggle::after {
+  transition: transform 0.18s ease, background-color 0.18s ease;
+}
+.toggle.on::after {
+  transform: translateX(1.1rem);
+}
+.demo-foot {
+  margin-top: 0.85rem;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--faint);
+}
+.demo-foot #demo-status {
+  font-family: var(--mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+}
+.mini-cta {
+  cursor: pointer;
+  font-family: var(--body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--hair-strong);
+  border-radius: 999px;
+  padding: 0.45rem 1.1rem;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+.mini-cta:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ---------- changelog extras (section 11) ---------- */
+.log-head h2 + .stamp {
+  margin-left: auto;
+}
+ol.log .ver .badge {
+  margin-left: 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--cta-text);
+  background: linear-gradient(180deg, var(--paint-hi), var(--paint) 55%, var(--paint-lo));
+  border-radius: 999px;
+  padding: 0.16rem 0.55rem;
+  vertical-align: 2px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+}
+ol.log .rel-anchor {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--faint);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+ol.log .rel {
+  position: relative;
+}
+ol.log .rel-anchor {
+  position: absolute;
+  left: -1.2rem;
+  top: 0.3rem;
+}
+ol.log > li:hover .rel-anchor,
+ol.log .rel-anchor:focus-visible {
+  opacity: 1;
+}
+details.older {
+  margin-top: 1.1rem;
+  max-width: 46em;
+}
+details.older summary {
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  padding: 0.55rem 0;
+}
+details.older summary::-webkit-details-marker {
+  display: none;
+}
+details.older summary::before {
+  content: "▸ ";
+}
+details.older[open] summary::before {
+  content: "▾ ";
+}
+details.older summary:hover {
+  color: var(--text);
+}
+details.older .older-count {
+  color: var(--faint);
+}
+details.older ol.log {
+  margin-top: 0.4rem;
+}
+
+/* ---------- 404 ---------- */
+.page-404 {
+  min-height: 78vh;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 3rem var(--edge);
+}
+.page-404 .code {
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+.page-404 h1.mark {
+  margin-top: 0.5rem;
+  font-size: clamp(2.4rem, 7vw, 4.2rem);
+}
+.page-404 .lede {
+  margin-top: 1rem;
+  max-width: 30em;
+}
+.page-404 .cta-row {
+  margin-top: 1.8rem;
+}
+.page-404 .paintline {
+  margin: 3rem 0 0;
+  width: min(26rem, 100%);
+  height: 3px;
+}
+
+/* ---------- motion: one switch for everything new ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .tchart-frame .tc-zp,
+  .tchart-frame .tc-stock {
+    transition: none;
+  }
+  .tchart-frame:not(.drawn) .tc-zp,
+  .tchart-frame:not(.drawn) .tc-stock {
+    stroke-dashoffset: 0;
+  }
+  .toggle,
+  .toggle::after,
+  .faq summary::after {
+    transition: none;
+  }
+}
+
+/* ============================================================
+ * 8. Responsive for the new sections
+ * ============================================================ */
+@media (max-width: 860px) {
+  .specstrip {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem 1.6rem;
+    padding: 1.3rem 0 1.4rem;
+  }
+  .cartable tbody th {
+    white-space: normal;
+  }
+  /* narrow screens: each car becomes a stacked block instead of a
+   * three-column squeeze */
+  .cartable thead {
+    display: none;
+  }
+  .cartable,
+  .cartable tbody,
+  .cartable tr,
+  .cartable th,
+  .cartable td {
+    display: block;
+    border: 0;
+    padding: 0;
+  }
+  .cartable tr {
+    padding: 1rem 0 1.1rem;
+    border-bottom: 1px solid var(--hair);
+  }
+  .cartable tr:last-child {
+    border-bottom: 0;
+  }
+  .cartable td .pill {
+    margin-top: 0.5rem;
+  }
+  .cartable td:last-child {
+    margin-top: 0.55rem;
+    max-width: none;
+  }
+  .compare th,
+  .compare td {
+    padding-right: 0.7rem;
+  }
+  .compare td {
+    min-width: 5.2rem;
+  }
+  .tc-cliff-label {
+    font-size: 9.5px;
+  }
+  /* keep the chart's line labels legible: swipe sideways instead of
+   * shrinking the type into noise */
+  .tchart-frame {
+    overflow-x: auto;
+  }
+  .tchart-frame svg {
+    min-width: 36rem;
+  }
+}
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 3rem;
+    padding-bottom: 2.6rem;
+  }
+  .paintwall {
+    justify-self: start;
+    width: min(21rem, 100%);
+  }
+  .chips {
+    display: none;
+  }
+  .wearing {
+    text-align: left;
+  }
+  dl.ledger > div {
+    grid-template-columns: 1fr;
+    gap: 0.25rem;
+  }
+  /* narrow screens: date on its own line so the change list
+   * gets the full width */
+  ol.log > li {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+  ol.log time {
+    padding-top: 0;
+  }
+  ol.log .rel {
+    display: flex;
+    gap: 0.5rem;
+    align-items: baseline;
+    padding-top: 0;
+  }
+  main section {
+    padding-top: 2.6rem;
+  }
+  /* one-line topbar: the nav scrolls sideways instead of wrapping
+   * into a tall stack; the build stamp stays out of the way */
+  .topbar {
+    flex-wrap: nowrap;
+    padding-top: 0.85rem;
+    padding-bottom: 0.8rem;
+  }
+  .topbar nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+  .topbar nav::-webkit-scrollbar {
+    display: none;
+  }
+  .topbar nav a.build {
+    display: none;
+  }
+  html {
+    scroll-padding-top: 4.2rem;
+  }
+}

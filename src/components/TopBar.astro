@@ -1,0 +1,86 @@
+---
+// Sticky top bar: wordmark, section links (scroll-spy highlights the
+// one on screen), the wiki, GitHub/Discord, and the build stamp.
+import { build, repo } from "../data/changelog.js";
+
+const stamp = `${build.sha} · ${build.date}`;
+---
+
+<header class="topbar">
+  <a class="id" href="#main">zoompilot</a>
+  <nav aria-label="Site">
+    <a href="#features" data-spy>features</a>
+    <a href="#setup" data-spy>setup</a>
+    <a href="#install" data-spy>install</a>
+    <a href="#log" data-spy>changelog</a>
+    <a class="ext" href={repo.wiki}>wiki</a>
+    <a class="ext" href={repo.github}>github</a>
+    <a class="ext" href={repo.discord}>discord</a>
+    <a class="build" href={repo.commits} data-build aria-label="latest commit"
+      >{stamp}</a
+    >
+  </nav>
+</header>
+
+<script>
+  /* build stamp: refresh from the GitHub API; keep the server-rendered
+   * value when offline or rate-limited */
+  const stamps = document.querySelectorAll<HTMLAnchorElement>("[data-build]");
+  if (stamps.length) {
+    fetch("https://api.github.com/repos/zoompilot/zoompilot/commits?per_page=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (!data || !data[0]) return;
+        const d = new Date(data[0].commit.committer.date);
+        const pad = (n: number) => (n < 10 ? "0" : "") + n;
+        const text =
+          data[0].sha.slice(0, 10) +
+          " · " +
+          d.getFullYear() +
+          "-" +
+          pad(d.getMonth() + 1) +
+          "-" +
+          pad(d.getDate());
+        stamps.forEach((el) => (el.textContent = text));
+      })
+      .catch(() => {});
+  }
+
+  /* scroll-spy: highlight the nav link for the section on screen */
+  const links = document.querySelectorAll<HTMLAnchorElement>("[data-spy]");
+  const byId = new Map<string, HTMLAnchorElement>();
+  links.forEach((l) => {
+    const id = l.hash.slice(1);
+    if (id) byId.set(id, l);
+  });
+  const watched = [...byId.keys()]
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => el !== null);
+  const setCurrent = (id: string | null) => {
+    links.forEach((l) => l.removeAttribute("aria-current"));
+    if (id) byId.get(id)?.setAttribute("aria-current", "true");
+  };
+  if (watched.length && "IntersectionObserver" in window) {
+    /* the section whose top is closest above the reading line wins */
+    const visible = new Map<Element, boolean>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => visible.set(e.target, e.isIntersecting));
+        let best: Element | null = null;
+        let bestTop = -Infinity;
+        watched.forEach((el) => {
+          if (!visible.get(el)) return;
+          const top = el.getBoundingClientRect().top;
+          if (top <= 160 && top > bestTop) {
+            bestTop = top;
+            best = el;
+          }
+        });
+        /* above the first section (hero/index): nothing highlighted */
+        setCurrent(best ? best.id : null);
+      },
+      { rootMargin: "-20% 0px -55% 0px" },
+    );
+    watched.forEach((el) => io.observe(el));
+  }
+</script>

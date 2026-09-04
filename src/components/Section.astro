@@ -1,0 +1,17 @@
+---
+// Numbered section header, the spec-sheet style ("01 / steering
+// improvements / intro paragraph").
+interface Props {
+  idx: string;
+  id?: string;
+  title: string;
+  intro?: string;
+}
+const { idx, id, title, intro } = Astro.props;
+---
+
+<div class="sec">
+  <p class="idx">{idx}</p>
+  <h2 id={id}>{title}</h2>
+  {intro && <p class="intro">{intro}</p>}
+</div>

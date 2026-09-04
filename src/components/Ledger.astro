@@ -1,0 +1,23 @@
+---
+// Feature ledger: one hairline row per feature — term on the left,
+// description on the right.
+interface Item {
+  dt: string;
+  dd: string;
+}
+interface Props {
+  items: Item[];
+}
+const { items } = Astro.props;
+---
+
+<dl class="ledger">
+  {
+    items.map((item) => (
+      <div>
+        <dt>{item.dt}</dt>
+        <dd set:html={item.dd} />
+      </div>
+    ))
+  }
+</dl>

@@ -1,0 +1,25 @@
+---
+// 404: dead end, painted. Cloudflare Pages serves this automatically
+// for unknown paths on the static project.
+import Base from "../layouts/Base.astro";
+import { repo } from "../data/changelog.js";
+---
+
+<Base
+  title="zoompilot: page not found"
+  description="That page does not exist. The zoompilot home page does."
+>
+  <main class="page-404">
+    <p class="code">404</p>
+    <h1 class="mark">wrong exit.</h1>
+    <p class="lede">
+      There is nothing at this address. The car is fine — back up and take
+      the main road.
+    </p>
+    <div class="cta-row">
+      <a class="cta" href="/">back to zoompilot</a>
+      <a class="alt" href={repo.wiki}>read the wiki ↗</a>
+    </div>
+    <div class="paintline" aria-hidden="true"></div>
+  </main>
+</Base>

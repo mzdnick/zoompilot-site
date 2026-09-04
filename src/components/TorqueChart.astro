@@ -1,0 +1,147 @@
+---
+// The EPS behavior chart, section 01: old vs new steering response
+// across the full speed range. X = speed, Y = EPS torque (CAN counts).
+// All geometry lives in src/data/chart-geometry.js, shared with the
+// wiki's copy of this chart (scripts/gen-wiki-chart.mjs) so the two
+// can never drift apart.
+import {
+  X0,
+  X1,
+  Y0,
+  Y1,
+  VIEW_W,
+  VIEW_H,
+  CLIFF_MID,
+  x,
+  y,
+  bands,
+  zpPath,
+  stockPath,
+  scalePath,
+  xTicks,
+  yTicks,
+} from "../data/chart-geometry.js";
+
+const wikiUrl = "https://wiki.zoompilot.ai/technical/lateral-tune/";
+---
+
+<figure class="tchart">
+  <div class="tchart-frame">
+    <svg
+      viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+      role="img"
+      aria-label="Steering torque response across speed, one corner demand held constant. Stock openpilot applies one factor at every speed: a flat line. zoompilot keeps a learned tune for each of seven speed bands: a stepped line that sits above stock at neighborhood speeds, steps down where the EPS scale steps at about 32 mph, and sits below stock on the highway. Measured anchors: the EPS scale step from 1200 to 800 counts, drawn dashed, and the seven band boundaries marked on the speed axis."
+    >
+      <!-- y grid -->
+      {
+        yTicks.map((c) => (
+          <g>
+            <line class="tc-grid" x1={X0} x2={X1} y1={y(c)} y2={y(c)} />
+            <text class="tc-text" x={X0 - 8} y={y(c) + 4} text-anchor="end">
+              {c}
+            </text>
+          </g>
+        ))
+      }
+      <!-- band hairlines: the real bin boundaries -->
+      {
+        bands.map((b) => (
+          <line
+            class="tc-band"
+            x1={x(b.ms)}
+            x2={x(b.ms)}
+            y1={Y1}
+            y2={Y0 + 6}
+          />
+        ))
+      }
+      <!-- the measured cliff -->
+      <line
+        class="tc-cliff"
+        x1={x(CLIFF_MID)}
+        x2={x(CLIFF_MID)}
+        y1={Y1}
+        y2={Y0}
+      />
+      <text class="tc-cliff-label" x={x(CLIFF_MID) + 8} y={Y0 + 10}>
+        the cliff · ~32 mph
+      </text>
+      <!-- measured: the EPS's own scale, which steps at the cliff -->
+      <path id="tc-scale" class="tc-scale" d={scalePath} />
+      <text class="tc-text" x={X1 - 4} y={y(1200) - 8} text-anchor="end">
+        EPS scale (STEER_MAX) · measured
+      </text>
+      <!-- old behavior: one factor for every speed -->
+      <path id="tc-stock" class="tc-stock" d={stockPath} />
+      <text class="tc-stock-label" x={X1 - 4} y={y(700) + 16} text-anchor="end">
+        stock openpilot · one factor, all speeds
+      </text>
+      <!-- new behavior: a learned tune per band, rescaled at the cliff -->
+      <path id="tc-zp" class="tc-zp" d={zpPath} />
+      <text class="tc-zp-label" x={x(0.6)} y={y(950) - 10}>
+        zoompilot · a learned tune per band
+      </text>
+      <!-- axes -->
+      <line class="tc-axis" x1={X0} x2={X1} y1={Y1} y2={Y1} />
+      <line class="tc-axis" x1={X0} x2={X0} y1={Y0} y2={Y1} />
+      <!-- x labels -->
+      {
+        xTicks.map((t) => (
+          <g>
+            <line
+              class="tc-axis"
+              x1={x(t.v)}
+              x2={x(t.v)}
+              y1={Y1}
+              y2={Y1 + 4}
+            />
+            <text class="tc-text" x={x(t.v)} y={Y1 + 18} text-anchor="middle">
+              {t.mph}
+            </text>
+          </g>
+        ))
+      }
+      <text class="tc-text tc-axis-title" x={X1} y={Y1 + 31} text-anchor="end">
+        speed · mph
+      </text>
+      <text
+        class="tc-text tc-axis-title"
+        transform={`translate(14 ${Y1 - 6}) rotate(-90)`}
+        text-anchor="start"
+      >
+        EPS torque · CAN counts
+      </text>
+    </svg>
+  </div>
+  <figcaption class="tchart-cap">
+    One corner demand, held constant. Stock openpilot asks for the same
+    torque at every speed — short of the wheel in parking lots, pushy on
+    the highway. zoompilot learns a tune per band and rescales exactly at
+    the cliff. The two response lines are schematic; the cliff position,
+    the scale step, and the band boundaries are measured. Source: the
+    <a href={wikiUrl}>lateral tune measurement record</a>.
+  </figcaption>
+</figure>
+
+<script>
+  /* draw both response lines in when the chart first scrolls into view */
+  const frame = document.querySelector(".tchart-frame");
+  if (
+    frame &&
+    "IntersectionObserver" in window &&
+    !matchMedia("(prefers-reduced-motion: reduce)").matches
+  ) {
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          frame.classList.add("drawn");
+          io.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+    io.observe(frame);
+  } else {
+    frame?.classList.add("drawn");
+  }
+</script>

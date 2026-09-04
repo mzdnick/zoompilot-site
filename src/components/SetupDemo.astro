@@ -1,0 +1,91 @@
+---
+// The settings suite, drawn as a device screen mock. Interactive: the
+// toggles respond, and "replay recommended setup" walks the screen
+// back to the state a fresh install ships with. The original site
+// plays a screen recording here; drop one into public/screens/ and
+// swap this out for a <video> when available.
+const rows = [
+  { lbl: "Torque control", sub: "steer by request, not by angle", on: true },
+  { lbl: "Self-tune", sub: "learns your car's steering", on: true },
+  {
+    lbl: "Speed-dependent self-tune",
+    sub: "seven speed ranges, tuned per range",
+    on: true,
+  },
+  { lbl: "Custom tune", sub: "keep off unless you know why", on: false },
+  { lbl: "Manual real-time", sub: "keep off", on: false },
+];
+---
+
+<figure class="demo">
+  <div class="settings-mock">
+    <p class="mock-title" aria-hidden="true">zoompilot · steering</p>
+    <ol>
+      {
+        rows.map((r) => (
+          <li>
+            <span class="lbl">
+              {r.lbl}
+              <span class="sub">{r.sub}</span>
+            </span>
+            <button
+              type="button"
+              class={`toggle ${r.on ? "on" : ""}`}
+              role="switch"
+              aria-checked={r.on ? "true" : "false"}
+              aria-label={r.lbl}
+              data-recommended={r.on ? "on" : "off"}
+            />
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+  <figcaption class="demo-foot">
+    <button id="demo-replay" type="button" class="mini-cta">
+      replay recommended setup
+    </button>
+    <span id="demo-status" aria-live="polite">tap the toggles — this is the real settings screen</span>
+  </figcaption>
+</figure>
+
+<script>
+  const toggles = [
+    ...document.querySelectorAll<HTMLButtonElement>(".toggle"),
+  ];
+  const replayBtn = document.getElementById("demo-replay")!;
+  const status = document.getElementById("demo-status")!;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+
+  function set(t: HTMLButtonElement, on: boolean) {
+    t.classList.toggle("on", on);
+    t.setAttribute("aria-checked", String(on));
+  }
+
+  toggles.forEach((t) =>
+    t.addEventListener("click", () => {
+      set(t, !t.classList.contains("on"));
+      status.textContent = "your screen, your rules";
+    }),
+  );
+
+  /* walk the rows back to the recommended state, one beat apart,
+   * like someone flipping them on the device */
+  replayBtn.addEventListener("click", () => {
+    clearTimeout(timer);
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    toggles.forEach((t, i) => {
+      const on = t.dataset.recommended === "on";
+      if (reduce) {
+        set(t, on);
+        return;
+      }
+      setTimeout(() => set(t, on), 140 * (i + 1));
+    });
+    status.textContent = "recommended setup restored ✓";
+    timer = setTimeout(
+      () => (status.textContent = "tap the toggles — this is the real settings screen"),
+      3500,
+    );
+  });
+</script>

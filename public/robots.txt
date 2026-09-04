@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Sitemap index, built by @astrojs/sitemap from the deployed origin.
+Sitemap: https://zoompilot-site.pages.dev/sitemap-index.xml

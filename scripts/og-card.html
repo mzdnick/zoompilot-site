@@ -1,0 +1,117 @@
+<!doctype html>
+<!-- Source for the social share card. Open in a browser at a 1200x630
+     viewport and screenshot to public/og.png. Kept in the repo so the
+     card can be regenerated when the brand evolves. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: "Audiowide";
+    src: url("../public/fonts/Audiowide-Regular.woff2") format("woff2");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: "Inter";
+    src: url("../public/fonts/Inter-SemiBold.woff2") format("woff2");
+    font-weight: 600;
+  }
+  @font-face {
+    font-family: "JetBrains Mono";
+    src: url("../public/fonts/JetBrainsMono-Medium.woff2") format("woff2");
+    font-weight: 500;
+  }
+  :root {
+    --paint-hi: #777b7e; /* 46G machine gray, the site default */
+    --paint: #55585a;
+    --accent: #9da2a6;
+  }
+  * { margin: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(58rem 30rem at 78% -10rem, rgba(119, 123, 126, 0.42), transparent 70%),
+      #131518;
+    color: rgba(255, 255, 255, 0.93);
+    font-family: "Inter", system-ui, sans-serif;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 84px 92px 0;
+  }
+  .wordmark {
+    font-family: "Audiowide", sans-serif;
+    font-size: 118px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+  .tagline {
+    margin-top: 30px;
+    font-size: 33px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: rgba(255, 255, 255, 0.93);
+    max-width: 18em;
+  }
+  .specline {
+    margin-top: 26px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 22.5px;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+  }
+  .specline .sep { opacity: 0.45; padding: 0 0.35em; }
+  /* the measured cliff, ghosted: the section 01 chart as a motif */
+  .cliff {
+    position: absolute;
+    right: 74px;
+    top: 158px;
+    width: 470px;
+    height: auto;
+  }
+  .base {
+    position: absolute;
+    left: 92px;
+    right: 92px;
+    bottom: 66px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 21px;
+    color: #7e8695;
+  }
+  .paintline {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 8px;
+    background: linear-gradient(90deg,
+      #a01c2f 0 12.5%, #85898e 0 25%, #566269 0 37.5%, #2e5a8b 0 50%,
+      #55585a 0 62.5%, #f3f2ed 0 75%, #1c2f4e 0 87.5%, #121316 0 100%);
+  }
+</style>
+</head>
+<body>
+  <div class="wordmark">zoompilot</div>
+  <div class="tagline">a Mazda-optimized fork of sunnypilot, tuned to the car&rsquo;s measured steering limits.</div>
+  <div class="specline">7 speed bands<span class="sep">·</span>12 units/frame<span class="sep">·</span>steer-to-zero</div>
+  <svg class="cliff" viewBox="0 0 500 230" aria-hidden="true">
+    <g fill="none">
+      <path d="M 0 46 H 196 L 212 138 H 500" stroke="#9da2a6" stroke-width="3" opacity="0.5"/>
+      <path d="M 0 112 H 196 L 212 118 H 500" stroke="#7e8695" stroke-width="2" stroke-dasharray="7 7" opacity="0.4"/>
+      <line x1="204" y1="10" x2="204" y2="222" stroke="#e8a13c" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.55"/>
+      <g fill="#9da2a6" opacity="0.55">
+        <circle cx="64" cy="222" r="4"/><circle cx="105" cy="222" r="4"/>
+        <circle cx="144" cy="222" r="4"/><circle cx="256" cy="222" r="4"/>
+        <circle cx="316" cy="222" r="4"/><circle cx="398" cy="222" r="4"/>
+        <circle cx="463" cy="222" r="4"/>
+      </g>
+    </g>
+  </svg>
+  <div class="base"><span>open source · comma 3X</span><span>zoompilot.ai</span></div>
+  <div class="paintline"></div>
+</body>
+</html>

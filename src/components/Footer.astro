@@ -1,0 +1,34 @@
+---
+// Footer: the paint line, credits, and the sign-off.
+import { repo } from "../data/changelog.js";
+---
+
+<div class="paintline" aria-hidden="true"></div>
+<footer class="foot">
+  <div class="thanks">
+    <p>
+      zoompilot stands on <a href="https://sunnypilot.ai">sunnypilot</a>,
+      which stands on
+      <a href="https://github.com/commaai/openpilot">openpilot</a> by
+      comma.ai. Nearly everything here rides on their work. Star
+      <a href="https://github.com/sunnypilot/sunnypilot">their repo</a> and
+      read <a href="https://docs.sunnypilot.ai">their docs</a> for more
+      information about all features.
+    </p>
+    <p>
+      The manual lives at <a href={repo.wiki}>wiki.zoompilot.ai</a>:
+      supported cars, hardware, settings, safety, and the measurement
+      record behind every change.
+    </p>
+    <p>
+      This branch and features would work on other vehicles and could be
+      upstreamed into SunnyPilot or openpilot. I'm slowly working on this,
+      but it's easier to share my own fork in the meantime.
+    </p>
+    <p>
+      Mazda, comma.ai, and the sunnypilot project neither endorse this nor
+      have anything to do with it.
+    </p>
+  </div>
+  <p class="signoff">zoom-zoom-zoom</p>
+</footer>

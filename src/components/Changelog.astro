@@ -1,0 +1,134 @@
+---
+// Changelog: releases from src/data/changelog.js, newest first. The
+// version string leads (it is what the device home screen shows); the
+// date is secondary. Add new entries at the top of the data file.
+//
+// The newest releases render expanded; the rest collapse into one
+// "older releases" disclosure. Every release has a stable anchor
+// (#rel-<version>, or #rel-<date>-<n> for pre-version entries), and
+// opening a link to a collapsed release opens the disclosure.
+import { releases, build, repo } from "../data/changelog.js";
+
+const stamp = `${build.sha} · ${build.date}`;
+const SHOWN = 3;
+const visible = releases.slice(0, SHOWN);
+const older = releases.slice(SHOWN);
+
+const relId = (rel: (typeof releases)[number], i: number) =>
+  rel.ver ? `rel-${rel.ver}` : `rel-${rel.date}-${i}`;
+---
+
+<section id="log" aria-labelledby="h-log">
+  <div class="sec">
+    <p class="idx">12</p>
+    <div class="log-head">
+      <h2 id="h-log">changelog</h2>
+      <a class="stamp" href={repo.commits} data-build>{stamp}</a>
+    </div>
+  </div>
+  <ol class="log">
+    {
+      visible.map((rel, i) => (
+        <li id={relId(rel, i)}>
+          <div class="rel">
+            {rel.ver && (
+              <b class="ver">
+                {rel.ver}
+                {i === 0 && <span class="badge">latest</span>}
+              </b>
+            )}
+            <time datetime={rel.date}>{rel.date}</time>
+            <a class="rel-anchor" href={`#${relId(rel, i)}`} aria-label={`link to this release`}>
+              #
+            </a>
+          </div>
+          <div>
+            {rel.title && <strong>{rel.title}</strong>}
+            {rel.summary && <span>{rel.summary}</span>}
+            {rel.items && (
+              <ul>
+                {rel.items.map((item: any) => (
+                  <li>
+                    <span set:html={item.html} />
+                    {item.sub && (
+                      <ul>
+                        {item.sub.map((s: any) => (
+                          <li>
+                            <span set:html={s.html} />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+  {
+    older.length > 0 && (
+      <details class="older" id="older-releases">
+        <summary>
+          older releases <span class="older-count">({older.length})</span>
+        </summary>
+        <ol class="log">
+          {older.map((rel, i) => (
+            <li id={relId(rel, i + SHOWN)}>
+              <div class="rel">
+                {rel.ver && <b class="ver">{rel.ver}</b>}
+                <time datetime={rel.date}>{rel.date}</time>
+                <a
+                  class="rel-anchor"
+                  href={`#${relId(rel, i + SHOWN)}`}
+                  aria-label="link to this release"
+                >
+                  #
+                </a>
+              </div>
+              <div>
+                {rel.title && <strong>{rel.title}</strong>}
+                {rel.summary && <span>{rel.summary}</span>}
+                {rel.items && (
+                  <ul>
+                    {rel.items.map((item: any) => (
+                      <li>
+                        <span set:html={item.html} />
+                        {item.sub && (
+                          <ul>
+                            {item.sub.map((s: any) => (
+                              <li>
+                                <span set:html={s.html} />
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </li>
+          ))}
+        </ol>
+      </details>
+    )
+  }
+</section>
+
+<script>
+  /* deep links into the collapsed block: opening #rel-… opens the
+   * disclosure first, on load and whenever the hash changes */
+  const older = document.getElementById("older-releases");
+  function openForHash() {
+    if (!older || !location.hash) return;
+    const target = document.getElementById(decodeURIComponent(
+      location.hash.slice(1),
+    ));
+    if (target && older.contains(target)) older.open = true;
+  }
+  openForHash();
+  addEventListener("hashchange", openForHash);
+</script>

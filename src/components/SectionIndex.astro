@@ -1,0 +1,27 @@
+---
+// Section index: the numbered jump grid under the hero. Every section
+// on the page, one tap away — the single-page table of contents.
+interface Entry {
+  id: string;
+  n: string;
+  t: string;
+}
+interface Props {
+  entries: Entry[];
+}
+const { entries } = Astro.props;
+---
+
+<nav class="secindex" aria-label="On this page">
+  <p class="secindex-label">on this page</p>
+  <div class="secindex-grid">
+    {
+      entries.map((e) => (
+        <a href={`#${e.id}`}>
+          <span class="n">{e.n}</span>
+          <span class="t">{e.t}</span>
+        </a>
+      ))
+    }
+  </div>
+</nav>

@@ -1,0 +1,39 @@
+---
+// Install card: the comma-device custom software URL with a copy
+// button.
+interface Props {
+  url: string;
+}
+const { url } = Astro.props;
+---
+
+<div class="device-screen">
+  <p class="screen-label">custom software url</p>
+  <div class="urlbar">
+    <code id="install-url">{url}</code>
+    <button id="copy-btn" type="button">copy</button>
+  </div>
+  <p class="hint">enter for custom install URL</p>
+</div>
+
+<script>
+  const btn = document.getElementById("copy-btn")!;
+  const url = document.getElementById("install-url")!.textContent!.trim();
+  btn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(url);
+      btn.textContent = "copied ✓";
+    } catch {
+      /* clipboard blocked (e.g. non-secure context): select instead */
+      const range = document.createRange();
+      range.selectNodeContents(
+        document.getElementById("install-url")!,
+      );
+      const sel = getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(range);
+      btn.textContent = "press ⌘C";
+    }
+    setTimeout(() => (btn.textContent = "copy"), 1600);
+  });
+</script>

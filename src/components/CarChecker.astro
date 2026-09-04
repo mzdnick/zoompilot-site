@@ -1,0 +1,114 @@
+---
+// "Is my Mazda supported?" — pick a model and year, get the support
+// status. The answers mirror the wiki's supported-cars table (the same
+// source the table above syncs); when in doubt it points to the
+// wiki and the Discord rather than guessing.
+import { repo } from "../data/changelog.js";
+---
+
+<div class="checker">
+  <p class="checker-label">is my mazda supported?</p>
+  <div class="checker-controls">
+    <label>
+      <span>model</span>
+      <select id="ck-model">
+        <option value="cx5" selected>CX-5</option>
+        <option value="cx9">CX-9</option>
+        <option value="other">another Mazda (EPS swap)</option>
+      </select>
+    </label>
+    <label id="ck-year-wrap">
+      <span>model year</span>
+      <select id="ck-year"></select>
+    </label>
+  </div>
+  <div class="checker-result" id="ck-result" aria-live="polite"></div>
+</div>
+
+<script>
+  import { repo } from "../data/changelog.js";
+
+  /* year ranges per the wiki's supported-cars table */
+  const MODELS: Record<
+    string,
+    { label: string; years: number[]; fullFrom: number; fullTo: number }
+  > = {
+    cx5: { label: "the CX-5", years: range(2013, 2026), fullFrom: 2022, fullTo: 2025 },
+    cx9: { label: "the CX-9", years: range(2016, 2024), fullFrom: 2021, fullTo: 2023 },
+    other: { label: "your Mazda", years: range(1995, 2026), fullFrom: 0, fullTo: 0 },
+  };
+  function range(a: number, b: number) {
+    return Array.from({ length: b - a + 1 }, (_, i) => b - i);
+  }
+
+  const modelSel = document.getElementById("ck-model") as HTMLSelectElement;
+  const yearSel = document.getElementById("ck-year") as HTMLSelectElement;
+  const yearWrap = document.getElementById("ck-year-wrap")!;
+  const out = document.getElementById("ck-result")!;
+
+  const wikiHref = `${repo.wiki}/getting-started/supported-cars/`;
+
+  function fillYears() {
+    const m = MODELS[modelSel.value];
+    yearSel.innerHTML = m.years
+      .map((y) => `<option value="${y}">${y}</option>`)
+      .join("");
+    /* start on the newest full-support year for each model */
+    const mid = m.fullFrom || m.years[Math.floor(m.years.length / 2)];
+    yearSel.value = String(
+      m.years.find((y) => y <= (m.fullTo || m.years[0]) && y >= mid) ??
+        m.years[0],
+    );
+    yearWrap.hidden = modelSel.value === "other";
+  }
+
+  function verdict() {
+    const m = MODELS[modelSel.value];
+    const year = Number(yearSel.value);
+    if (modelSel.value === "other") {
+      return {
+        tone: "swap",
+        head: "Supported, if the rack is swapped.",
+        body:
+          "Older Mazdas run zoompilot with a swapped 2022+ CX-5 EPS rack. " +
+          "The rack is identified by its firmware during fingerprinting. " +
+          "Steering works down to 0 mph, and alpha longitudinal is enabled.",
+      };
+    }
+    if (year >= m.fullFrom && year <= m.fullTo) {
+      return {
+        tone: "yes",
+        head: `Yes — ${m.label} ${year} is covered.`,
+        body:
+          modelSel.value === "cx5"
+            ? "Every zoompilot feature, and steering works down to 0 mph. This is the primary development target."
+            : "Full support with factory-matched specs. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5.",
+      };
+    }
+    return {
+      tone: "no",
+      head: `Not on the stock rack — but the swap path may work.`,
+      body:
+        `${m.label.charAt(0).toUpperCase() + m.label.slice(1)} ${year} ` +
+        "predates the 2022+ electric power steering rack. With a swapped " +
+        "2022+ CX-5 rack it is supported, like any older Mazda.",
+    };
+  }
+
+  function render() {
+    const v = verdict();
+    out.innerHTML =
+      `<p class="ck-head ck-${v.tone}">${v.head}</p>` +
+      `<p class="ck-body">${v.body}</p>` +
+      `<p class="ck-links">Details: <a href="${wikiHref}">supported cars on the wiki</a>` +
+      ` · not sure? ask on <a href="${repo.discord}">Discord</a> with your model year.</p>`;
+  }
+
+  modelSel.addEventListener("change", () => {
+    fillYears();
+    render();
+  });
+  yearSel.addEventListener("change", render);
+  fillYears();
+  render();
+</script>

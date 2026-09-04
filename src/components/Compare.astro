@@ -1,0 +1,65 @@
+---
+// Compare: what each project ships for a 2022+ EPS Mazda today.
+// Stock openpilot and sunnypilot claims are limited to their public
+// support tables and feature lists; zoompilot rows trace to the wiki.
+import { repo } from "../data/changelog.js";
+
+type Cell = "yes" | "no" | "10" | "12";
+const rows: { cap: string; op: Cell; sp: Cell; zp: Cell | string }[] = [
+  { cap: "LKAS + ACC on the 2022+ EPS Mazdas", op: "yes", sp: "yes", zp: "yes" },
+  { cap: "Unified cruise management (ICBM)", op: "no", sp: "yes", zp: "yes" },
+  { cap: "Speed-Limit-Assist and curve-speed Smart Cruise", op: "no", sp: "yes", zp: "yes" },
+  { cap: "Speed-dependent torque across seven learned bands", op: "no", sp: "no", zp: "yes" },
+  { cap: "EPS-rail-aware limits and cliff-exact friction", op: "no", sp: "no", zp: "yes" },
+  { cap: "Torque command rate (units per frame)", op: "10", sp: "10", zp: "12" },
+  { cap: "Measured steer-to-zero on the 2022+ rack", op: "no", sp: "no", zp: "yes" },
+  { cap: "VIN + EPS fingerprinting (finds swapped racks)", op: "no", sp: "no", zp: "yes" },
+  { cap: "Mazda alpha longitudinal (radar and AEB off while on)", op: "no", sp: "no", zp: "exp" },
+  { cap: "Mazda sensors wired in: radar, blind spots, speed signs", op: "no", sp: "no", zp: "yes" },
+  { cap: "Mazda alert fixes (LKAS_BLOCK, override hysteresis)", op: "no", sp: "no", zp: "yes" },
+];
+const cell = (c: Cell | string) => {
+  if (c === "yes") return '<span class="yes" aria-label="yes">✓</span>';
+  if (c === "exp")
+    return '<span class="yes" aria-label="yes, experimental">✓<i>exp</i></span>';
+  if (c === "10" || c === "12") return `<span class="num">${c}</span>`;
+  return '<span class="no" aria-label="no">—</span>';
+};
+---
+
+<div class="table-scroll">
+  <table class="compare">
+    <thead>
+      <tr>
+        <th scope="col"><span class="sr-only">capability</span></th>
+        <th scope="col">
+          <a href="https://github.com/commaai/openpilot">openpilot</a>
+        </th>
+        <th scope="col">
+          <a href="https://github.com/sunnypilot/sunnypilot">sunnypilot</a>
+        </th>
+        <th scope="col" class="zp">zoompilot</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        rows.map((r) => (
+          <tr>
+            <th scope="row">{r.cap}</th>
+            <td set:html={cell(r.op)} />
+            <td set:html={cell(r.sp)} />
+            <td class="zp" set:html={cell(r.zp)} />
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</div>
+<p class="compare-note">
+  What each project ships for the 2022+ EPS Mazdas today. zoompilot is a
+  fork of sunnypilot, so it keeps every sunnypilot feature — the right
+  column adds the Mazda work on top. Alpha longitudinal stays
+  experimental: while it is on, the radar is off and AEB is disabled.
+  Feature sources: the
+  <a href={repo.wiki}>zoompilot wiki</a> and the upstream support tables.
+</p>

@@ -1,0 +1,44 @@
+---
+// First drive: before you engage, how to engage, and what to expect.
+// Distilled from the wiki's getting-started/first-drive.md; the setup
+// steps live in section 09, so this starts at the roadside.
+import { repo } from "../data/changelog.js";
+import Ledger from "./Ledger.astro";
+---
+
+<section id="first-drive" aria-labelledby="h-first-drive">
+  <div class="sec">
+    <p class="idx">11</p>
+    <h2 id="h-first-drive">first drive</h2>
+    <p class="intro">
+      Everything below happens on the road, not on a computer. A few
+      checks first, then you engage exactly like openpilot.
+    </p>
+  </div>
+  <Ledger
+    items={[
+      {
+        dt: "Before you engage",
+        dd: "Clean the windscreen in front of the road camera. Mount the device high and centered, where driver monitoring can see your face. Read the safety page, and know how to cancel: the brake pedal or the cancel button.",
+      },
+      {
+        dt: "Engaging",
+        dd: "Set the cruise with the stock steering-wheel controls while driving above the minimum speed. On 2022+ EPS Mazdas the minimum speed is 0 mph — the car steers from a stop.",
+      },
+      {
+        dt: "What to expect",
+        dd: "Steering should feel confident at low speed and calm on the highway. The speed-dependent torque learns your specific rack over the first drives, and self-tune keeps improving in the background. You do not need to touch anything.",
+      },
+      {
+        dt: "If anything feels wrong",
+        dd: "Cancel and pull over. Most oddities are a settings drift or a stale install; the troubleshooting page covers the starter fixes before you ask on Discord.",
+      },
+    ]}
+  />
+  <p class="wiki-more">
+    Driving feedback with routes attached is the most useful contribution
+    there is: <a href={`${repo.wiki}/community/feedback/`}>report how the car drives</a>,
+    or read <a href={`${repo.wiki}/getting-started/first-drive/`}>first
+    drive on the wiki</a>.
+  </p>
+</section>

@@ -1,0 +1,26 @@
+---
+// Spec strip: the measured headline numbers, one glance under the hero.
+// Every figure here traces to the wiki's measurement record — keep it
+// that way. (12/frame vs stock 10: features/steering; seven bands:
+// technical/lateral-tune; 0 mph: features/steering#steering-to-zero.)
+const stats = [
+  { big: "12", unit: "units / frame", note: "torque command rate, up from stock openpilot's 10" },
+  { big: "7", unit: "speed bands", note: "each with its own learned factor and friction" },
+  { big: "0", unit: "mph floor", note: "steers to a standstill on the 2022+ EPS rack" },
+  { big: "3", unit: "car lines", note: "CX-5, CX-9, and EPS-swapped Mazdas" },
+];
+---
+
+<dl class="specstrip" aria-label="zoompilot in numbers">
+  {
+    stats.map((s) => (
+      <div>
+        <dt>
+          <span class="big">{s.big}</span>
+          <span class="unit">{s.unit}</span>
+        </dt>
+        <dd>{s.note}</dd>
+      </div>
+    ))
+  }
+</dl>

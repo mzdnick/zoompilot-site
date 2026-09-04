@@ -1,0 +1,93 @@
+---
+// Hero: wordmark, copy, CTAs, and the paint chip wall. Tapping a chip
+// repaints the whole page; the choice persists in localStorage.
+import { paints, defaultPaint } from "../data/paints.js";
+---
+
+<div class="hero" id="top">
+  <div class="hero-copy">
+    <h1 class="mark">zoompilot</h1>
+    <p class="tagline">a Mazda-optimized fork of sunnypilot.</p>
+    <p class="lede">
+      Created to give you the best openpilot experience on your Mazda. This
+      fork unlocks full steering performance and adds features like curve
+      speed control, speed-limit assist, and experimental longitudinal
+      modes.
+    </p>
+    <div class="cta-row">
+      <a class="cta" href="#install">install</a>
+      <a class="alt" href="#features">what changed ↓</a>
+    </div>
+  </div>
+
+  <div class="paintwall">
+    <div
+      class="chips"
+      role="group"
+      aria-label="The CX-5 paint line. Pick a color and the site wears it."
+    >
+      {
+        paints.map((p) => (
+          <button
+            class={`chip c${p.code}`}
+            type="button"
+            data-paint={p.code}
+            aria-pressed={p.code === defaultPaint ? "true" : "false"}
+            aria-label={`paint the site ${p.code.toUpperCase()} ${p.name}`}
+          >
+            <span class="code">{p.code.toUpperCase()}</span>
+          </button>
+        ))
+      }
+    </div>
+    <p class="wearing" id="paint-name" aria-live="polite">
+      {defaultPaint.toUpperCase()}
+      {paints.find((p) => p.code === defaultPaint)?.name}
+    </p>
+  </div>
+</div>
+
+<script>
+  import { paints, defaultPaint } from "../data/paints.js";
+
+  /* the chip wall: repaint the page, remember the choice.
+   * zpSetVars comes from the inline head script (declared globally). */
+  declare function zpSetVars(key: string): boolean;
+
+  const chips = document.querySelectorAll<HTMLButtonElement>(".chip");
+  const nameEl = document.getElementById("paint-name")!;
+  const themeMeta = document.querySelector<HTMLMetaElement>(
+    'meta[name="theme-color"]',
+  )!;
+  /* resolves --bg to its final color for the theme-color meta;
+   * body itself is mid-transition at read time */
+  const probe = document.body.appendChild(document.createElement("i"));
+  probe.style.cssText =
+    "position:absolute;width:0;height:0;visibility:hidden;background:var(--bg)";
+
+  function applyPaint(key: string) {
+    if (!zpSetVars(key)) return;
+    const paint = paints.find((p) => p.code === key);
+    chips.forEach((c) =>
+      c.setAttribute("aria-pressed", String(c.dataset.paint === key)),
+    );
+    if (paint) nameEl.textContent = paint.code.toUpperCase() + " " + paint.name;
+    try {
+      localStorage.setItem("zp-paint", key);
+    } catch {}
+    themeMeta.content = getComputedStyle(probe).backgroundColor;
+  }
+
+  chips.forEach((c) =>
+    c.addEventListener("click", () => applyPaint(c.dataset.paint!)),
+  );
+  let saved: string | null = null;
+  try {
+    saved = localStorage.getItem("zp-paint");
+  } catch {}
+  /* the markup's pressed chip is the single source for the default */
+  const pressed = document.querySelector<HTMLButtonElement>(
+    '.chip[aria-pressed="true"]',
+  );
+  applyPaint(paints.some((p) => p.code === saved) ? saved! : pressed!.dataset.paint!);
+</script>

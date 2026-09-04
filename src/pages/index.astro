@@ -1,0 +1,345 @@
+---
+// zoompilot.ai — single page, spec-sheet order. Sections jump from the
+// index grid under the hero; the top bar scroll-spies features, setup,
+// install, and changelog.
+import Base from "../layouts/Base.astro";
+import TopBar from "../components/TopBar.astro";
+import Hero from "../components/Hero.astro";
+import SpecStrip from "../components/SpecStrip.astro";
+import SectionIndex from "../components/SectionIndex.astro";
+import Section from "../components/Section.astro";
+import Ledger from "../components/Ledger.astro";
+import TorqueChart from "../components/TorqueChart.astro";
+import CarTable from "../components/CarTable.astro";
+import CarChecker from "../components/CarChecker.astro";
+import Compare from "../components/Compare.astro";
+import FAQ from "../components/FAQ.astro";
+import SetupDemo from "../components/SetupDemo.astro";
+import InstallCard from "../components/InstallCard.astro";
+import FirstDrive from "../components/FirstDrive.astro";
+import Changelog from "../components/Changelog.astro";
+import Footer from "../components/Footer.astro";
+import { installUrl, repo } from "../data/changelog.js";
+import cars from "../data/supported-cars.json";
+
+const index = [
+  { id: "features", n: "01", t: "steering improvements" },
+  { id: "cruise", n: "02", t: "radar cruise enhancements" },
+  { id: "alerts", n: "03", t: "fix annoyances" },
+  { id: "sensors", n: "04", t: "wire up sensors" },
+  { id: "alpha-long", n: "05", t: "alpha longitudinal" },
+  { id: "coverage", n: "06", t: "additional Mazdas" },
+  { id: "compare", n: "07", t: "how it compares" },
+  { id: "faq", n: "08", t: "questions" },
+  { id: "setup", n: "09", t: "recommended setup" },
+  { id: "install", n: "10", t: "install" },
+  { id: "first-drive", n: "11", t: "first drive" },
+  { id: "log", n: "12", t: "changelog" },
+];
+
+/* SoftwareApplication structured data for search engines */
+const appLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "zoompilot",
+  applicationCategory: "Driver assistance software",
+  operatingSystem: "comma 3X, comma 3",
+  description:
+    "An openpilot fork for the Mazda CX-5, CX-9, and EPS-swapped models (2022-2025), tuned to the car's measured steering limits instead of another car's spec sheet.",
+  isAccessibleForFree: true,
+  url: "https://zoompilot.ai",
+  sameAs: [repo.github, repo.wiki],
+};
+---
+
+<Base
+  title="zoompilot: a Mazda-optimized fork of sunnypilot"
+  description="An openpilot fork for the Mazda CX-5, CX-9, and EPS-swapped models (2022-2025), tuned to the car's measured steering limits instead of another car's spec sheet."
+>
+  <TopBar />
+
+  <main id="main">
+    <Hero />
+
+    <SpecStrip />
+
+    <SectionIndex entries={index} />
+
+    <!-- ============ steering ============ -->
+    <section id="features" aria-labelledby="h-steering">
+      <Section
+        idx="01"
+        id="h-steering"
+        title="steering improvements"
+        intro="Using a data-driven approach, I reverse-engineered the steering hardware to utilize the EPS to its full potential."
+      />
+      <Ledger
+        items={[
+          {
+            dt: "Speed-dependent torque",
+            dd: "We encode the full torque curve, giving you more confident steering in neighborhoods and fewer wobbles on the highway.",
+          },
+          {
+            dt: "Speed-dependent tuning",
+            dd: "Instead of one lateral acceleration factor for all speeds, zoompilot learns across seven distinct speed ranges to match non-linear EPS behavior.",
+          },
+          {
+            dt: "Rate-matched commands",
+            dd: "We ask for the EPS&rsquo;s maximum 12 units per frame (up from stock openpilot&rsquo;s 10), so torque ramps up faster.",
+          },
+          {
+            dt: "Factory-matched specs",
+            dd: "Steering ratio, mass, wheelbase, and lag are set to Mazda&rsquo;s real figures and refined against thousands of miles of driving data.",
+          },
+        ]}
+      />
+      <TorqueChart />
+      <p class="wiki-more">
+        The measurement record: <a href={`${repo.wiki}/features/steering/`}
+          >steering on the wiki</a
+        >.
+      </p>
+    </section>
+
+    <!-- ============ cruise ============ -->
+    <section id="cruise" aria-labelledby="h-cruise">
+      <Section
+        idx="02"
+        id="h-cruise"
+        title="radar cruise enhancements"
+        intro="I entirely rewrote sunnypilot&rsquo;s cruise systems for Mazda. Instead of independent features fighting for control, one unified system manages your set speed."
+      />
+      <Ledger
+        items={[
+          {
+            dt: "Intelligent-Cruise-Button-Management (ICBM)",
+            dd: "The core system that allows zoompilot to safely manage your cruise set speed.",
+          },
+          {
+            dt: "Speed-Limit-Assist (SLA)",
+            dd: "Automatically adjusts your cruise speed when passing a sign (using nav SD or OpenStreetMap data) with optional +/- offsets.",
+          },
+          {
+            dt: "Smart Cruise",
+            dd: "Automatically reduces your speed before a curve and resumes afterward using vision or map data.",
+          },
+          {
+            dt: "Deceleration Overshoot (Alpha)",
+            dd: "Compensates for slow MRCC response times by dropping the requested speed faster before a turn.",
+          },
+        ]}
+      />
+      <p class="wiki-more">
+        Deep dives on the wiki:
+        <a href={`${repo.wiki}/features/icbm/`}>ICBM</a>,
+        <a href={`${repo.wiki}/features/speed-limit-assist/`}>SLA</a>,
+        <a href={`${repo.wiki}/features/smart-cruise/`}>smart cruise</a>.
+      </p>
+    </section>
+
+    <!-- ============ alerts ============ -->
+    <section id="alerts" aria-labelledby="h-alerts">
+      <Section idx="03" id="h-alerts" title="fix annoyances" />
+      <Ledger
+        items={[
+          {
+            dt: "Place hands on wheel alert",
+            dd: "Analyzed logs proved that LKAS_BLOCK does not disengage steering on 2022+ models, so I disabled this false alert while keeping real faults active.",
+          },
+          {
+            dt: "Steering override hysteresis",
+            dd: "Added the same override filter used by Tesla and Rivian to prevent potholes or rough patches from tripping phantom takeovers.",
+          },
+        ]}
+      />
+    </section>
+
+    <!-- ============ sensors ============ -->
+    <section id="sensors" aria-labelledby="h-sensors">
+      <Section
+        idx="04"
+        id="h-sensors"
+        title="wire up sensors"
+        intro="Your CX-5 ships with sensors the stock port ignores. We wire them in."
+      />
+      <Ledger
+        items={[
+          {
+            dt: "Forward radar",
+            dd: "Reads distance, angle, and closing speed for up to four cars ahead.",
+          },
+          {
+            dt: "Blind-spot monitors",
+            dd: "Feeds blind-spot data into openpilot for optional automatic lane-change safety checks.",
+          },
+          {
+            dt: "Speed-limit signs",
+            dd: "Reads speed signs via the LKAS camera (requires a nav SD card) to power Speed-Limit-Assist.",
+          },
+        ]}
+      />
+      <p class="wiki-more">
+        Live readouts: <a href={`${repo.wiki}/features/sensor-readouts/`}
+          >sensor readouts on the wiki</a
+        >.
+      </p>
+    </section>
+
+    <!-- ============ alpha longitudinal ============ -->
+    <section id="alpha-long" class="alpha-sec" aria-labelledby="h-alpha-long">
+      <Section
+        idx="05"
+        id="h-alpha-long"
+        title="alpha longitudinal"
+        intro="openpilot takes full control of the gas and brakes instead of Mazda&rsquo;s stock radar cruise."
+      />
+      <div class="alpha-warn">
+        <p class="warn-label">warning · safety features disabled</p>
+        <p>
+          <strong
+            >If Alpha Longitudinal is enabled the car&rsquo;s radar is
+            turned off.</strong
+          >
+          Automatic Emergency Braking (AEB) and Forward Collision Alerts are
+          DISABLED when alpha longitudinal is on.
+        </p>
+      </div>
+      <Ledger
+        items={[
+          {
+            dt: "Experimental mode",
+            dd: "Uses the openpilot model end-to-end and enables stop sign/light braking. Experimental models do not often accelerate to the set speed.",
+          },
+          {
+            dt: "Expect dash errors and safety issues",
+            dd: "If your dash throws cruise, LKAS, or radar errors, turn the car completely off for 15 minutes to reset.",
+          },
+        ]}
+      />
+      <p class="credit">
+        Credit:
+        <a href="https://www.linkedin.com/in/alex-frutkin-6380459"
+          >Alex Frutkin</a
+        >
+        (@yummydirt) did the heavy lifting on the reverse engineering and
+        implementation for this feature.
+      </p>
+      <p class="wiki-more">
+        Read <a href={`${repo.wiki}/features/alpha-longitudinal/`}>the alpha
+        longitudinal page</a> and the <a href={`${repo.wiki}/safety/`}
+          >safety page</a
+        > before enabling.
+      </p>
+    </section>
+
+    <!-- ============ coverage: cars synced from the wiki ============ -->
+    <section id="coverage" aria-labelledby="h-coverage">
+      <Section
+        idx="06"
+        id="h-coverage"
+        title="additional Mazdas covered"
+        intro="zoompilot targets Mazdas with the 2022+ electric power steering (EPS) rack. The table is synced from the wiki's supported-cars page."
+      />
+      <CarTable cars={cars} />
+      <CarChecker />
+      <p class="wiki-more">
+        EPS-swap detection and the upstream support tables:
+        <a href={`${repo.wiki}/getting-started/supported-cars/`}
+          >supported cars on the wiki</a
+        >.
+      </p>
+    </section>
+
+    <!-- ============ compare ============ -->
+    <section id="compare" aria-labelledby="h-compare">
+      <Section
+        idx="07"
+        id="h-compare"
+        title="how it compares"
+        intro="zoompilot is a fork of sunnypilot, which is a fork of openpilot. Here is what that stack adds to a 2022+ EPS Mazda."
+      />
+      <Compare />
+    </section>
+
+    <!-- ============ faq ============ -->
+    <FAQ />
+
+    <!-- ============ setup ============ -->
+    <section id="setup" aria-labelledby="h-setup">
+      <Section
+        idx="09"
+        id="h-setup"
+        title="recommended setup"
+        intro="You can manage almost everything directly on the device."
+      />
+      <SetupDemo />
+      <ol class="steps">
+        <li>
+          <div>
+            <strong>Factory-reset before installing.</strong>
+            <span>Clear out stale settings from previous forks.</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Pick a driving model.</strong>
+            <span
+              >I run Firehose. DTRv6 is a favorite, and CD210 works well
+              with alpha longitudinal.</span
+            >
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Enable self-tune.</strong>
+            <span
+              >Ensure torque control, self-tune, and speed-dependent
+              self-tune are on.</span
+            >
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>Leave custom tune off.</strong>
+            <span>Keep custom tune and manual real-time off.</span>
+          </div>
+        </li>
+      </ol>
+      <p class="wiki-more">
+        Every toggle, explained: <a href={`${repo.wiki}/settings/`}
+          >settings on the wiki</a
+        >.
+      </p>
+    </section>
+
+    <!-- ============ install ============ -->
+    <section id="install" aria-labelledby="h-install">
+      <Section idx="10" id="h-install" title="install" />
+      <InstallCard url={installUrl} />
+      <p class="warn">
+        <strong>This is experimental software.</strong>
+        You drive the car, follow the law, and carry all the risk.
+      </p>
+      <p class="wiki-more">
+        The full walkthrough, step by step:
+        <a href={`${repo.wiki}/getting-started/install/`}>install on the
+        wiki</a
+        >.
+      </p>
+    </section>
+
+    <!-- ============ first drive ============ -->
+    <FirstDrive />
+
+    <!-- ============ changelog ============ -->
+    <Changelog />
+  </main>
+
+  <Footer />
+</Base>
+
+<script
+  type="application/ld+json"
+  set:html={JSON.stringify(appLd)}
+  is:inline
+/>
