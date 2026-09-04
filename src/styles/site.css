@@ -1053,18 +1053,11 @@ ol.log ul ul {
   letter-spacing: 0.06em;
   fill: var(--warn);
 }
-.tc-scale {
-  fill: none;
-  stroke: var(--faint);
-  stroke-width: 1.2;
-  stroke-dasharray: 3 4;
-  opacity: 0.85;
-}
-.tc-ceiling {
-  fill: none;
-  stroke: var(--dim);
-  stroke-width: 1.4;
-  opacity: 0.9;
+.tc-gap {
+  stroke: var(--accent);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
 }
 .tc-zp {
   fill: none;

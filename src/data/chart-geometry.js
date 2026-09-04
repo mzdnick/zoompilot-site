@@ -1,20 +1,26 @@
 /*
- * Shared geometry for the EPS behavior chart. Used by two renderers
+ * Shared geometry for the EPS authority chart. Used by two renderers
  * that must never drift apart:
  *   - src/components/TorqueChart.astro (the site, interactive)
  *   - scripts/gen-wiki-chart.mjs (a static SVG for the wiki)
  *
- * Every curve except stock's level is measured:
- *   - LAF gain and friction per speed band: the CX-5 device cache
- *     2026-08-19, kept as CSVs beside this file
- *     (LAF-torquegainbin.csv, frictionbin.csv).
- *   - EPS_CEILING_LOOKUP and STEER_MAX_LOOKUP: the fork's opendbc
- *     mazda/values.py. Stock openpilot runs one flat STEER_MAX = 800
- *     at every speed (values-open.py).
- * The response lines hold one illustrative corner demand
- * (DEMAND, m/s^2); their shape comes from the measured tables. The
- * axis stops at ~45 mph: past the cliff the learned curve settles
- * onto stock's level and there is nothing more to show.
+ * The chart answers one question: how much steering torque can the
+ * EPS actually apply, by speed — and how much of it each controller
+ * will ask for.
+ *   - The EPS ceiling is measured (EPS_CEILING_LOOKUP in the fork's
+ *     opendbc mazda/values.py): near 1148 counts at neighborhood
+ *     speeds, nine points down to 620 by the cliff.
+ *   - zoompilot clamps its commands to that ceiling and scales them
+ *     with the real STEER_MAX schedule, so its available torque IS
+ *     the ceiling.
+ *   - Stock openpilot caps every command at one flat STEER_MAX = 800
+ *     (values-open.py), so it strands the difference below the cliff;
+ *     above the cliff the EPS clamps it to the same 620.
+ * The learned per-band gain tables (LAF-torquegainbin.csv,
+ * frictionbin.csv, seven bins 6.5..35 m/s) stay in src/data/ as the
+ * record behind the speed-dependent tune; they are not drawn here.
+ * The axis stops at ~45 mph: past the cliff both controllers are
+ * EPS-limited to the same 620 counts.
  */
 
 export const X0 = 46,
@@ -33,8 +39,6 @@ export const CLIFF_LO = 14.2,
 export const x = (v) => X0 + (v / V_MAX) * (X1 - X0);
 export const y = (c) => Y1 - (c / C_MAX) * (Y1 - Y0);
 
-/* measured tables ------------------------------------------------ */
-
 /* the seven learned bands (CX-5, device cache 2026-08-19) */
 export const bands = [
   { ms: 6.5, mph: 15 },
@@ -46,25 +50,12 @@ export const bands = [
   { ms: 35.0, mph: 78 },
 ];
 
-/* the chart window ends past the cliff; bands above V_MAX draw no
- * hairline */
-export const shownBands = bands.filter((b) => b.ms < V_MAX);
-
-/* gain in counts per m/s^2 and friction in counts, per band */
-const BIN_MS = bands.map((b) => b.ms);
-const LAF = [2017, 2383, 1908, 1513, 1525, 1913, 2200];
-const FRICTION = [192, 172, 149, 116, 106, 98, 86];
-
 /* the EPS's own applied-torque ceiling, nine measured points */
 const CEIL_BP = [8.0, 8.5, 9.4, 10.3, 11.2, 12.1, 13.0, 13.9, 14.5];
 const CEIL_V = [1148, 1132, 1092, 1048, 1012, 920, 808, 676, 620];
 
-/* the one held corner demand for the response lines */
-const DEMAND = 0.3; // m/s^2
-
-/* stock's single learned factor lands on the high-speed plateau;
- * the level is schematic, the flat shape is the point */
-export const STOCK = 560;
+/* stock's single flat cap */
+export const STOCK_CAP = 800;
 
 /* np.interp with flat clamps, the same semantics the car code uses */
 function interp(bp, vals, v) {
@@ -76,14 +67,19 @@ function interp(bp, vals, v) {
   return vals[i] + t * (vals[i + 1] - vals[i]);
 }
 
-/* zoompilot's torque for the held demand: gain and friction
- * interpolated in count space (continuous through the cliff window),
- * clipped to the measured ceiling the way carcontroller.py clips */
-const zpCounts = (v) =>
-  Math.min(
-    interp(BIN_MS, LAF, v) * DEMAND + interp(BIN_MS, FRICTION, v),
-    interp(CEIL_BP, CEIL_V, v),
-  );
+const ceiling = (v) => interp(CEIL_BP, CEIL_V, v);
+
+/* where the flat 800 cap stops binding: the EPS starts clamping stock
+ * there, so both lines run together from this speed up */
+const JOIN_V = (() => {
+  for (let i = 0; i < CEIL_BP.length - 1; i++) {
+    if (CEIL_V[i] >= STOCK_CAP && CEIL_V[i + 1] < STOCK_CAP) {
+      const t = (CEIL_V[i] - STOCK_CAP) / (CEIL_V[i] - CEIL_V[i + 1]);
+      return CEIL_BP[i] + t * (CEIL_BP[i + 1] - CEIL_BP[i]);
+    }
+  }
+  return V_MAX;
+})();
 
 /* paths ----------------------------------------------------------- */
 
@@ -92,29 +88,30 @@ const pts = (pairs) =>
     .map(([v, c]) => `L ${x(v).toFixed(1)} ${y(c).toFixed(1)}`)
     .join(" ");
 
-/* fine sample: the demand curve and the ceiling cross between
- * breakpoints where the ceiling clip engages */
+/* zoompilot: the full measured ceiling (flat clamps outside 8-14.5) */
 export const zpPath =
-  `M ${x(0).toFixed(1)} ${y(zpCounts(0)).toFixed(1)} ` +
-  pts(
-    Array.from({ length: 81 }, (_, i) => {
-      const v = (i / 80) * V_MAX;
-      return [v, zpCounts(v)];
-    }),
-  );
-
-export const stockPath = `M ${x(0)} ${y(STOCK)} L ${x(V_MAX)} ${y(STOCK)}`;
-
-/* flat 1148, nine-point ramp to 620, flat again (np.interp clamps) */
-export const ceilingPath =
   `M ${x(0).toFixed(1)} ${y(CEIL_V[0]).toFixed(1)} ` +
   pts(CEIL_BP.map((v, i) => [v, CEIL_V[i]])) +
   ` L ${x(V_MAX).toFixed(1)} ${y(CEIL_V[CEIL_V.length - 1]).toFixed(1)}`;
 
-/* the CAN scale: unit conversion and PID limits, not applied torque */
-export const scalePath =
-  `M ${x(0)} ${y(1200)} L ${x(CLIFF_LO)} ${y(1200)} ` +
-  `L ${x(CLIFF_HI)} ${y(800)} L ${x(V_MAX)} ${y(800)}`;
+/* stock: flat 800 until the EPS starts clamping it, the ceiling
+ * from there up */
+export const stockPath =
+  `M ${x(0).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} ` +
+  `L ${x(JOIN_V).toFixed(1)} ${y(STOCK_CAP).toFixed(1)} ` +
+  pts(
+    CEIL_BP.filter((v) => v > JOIN_V).map((v, i, a) => [
+      v,
+      ceiling(v),
+    ]),
+  ) +
+  ` L ${x(V_MAX).toFixed(1)} ${y(CEIL_V[CEIL_V.length - 1]).toFixed(1)}`;
+
+/* the +torque gap callout sits in the flat region before the ramp */
+export const GAP_V = 6.5;
+export const GAP_PCT = Math.round(
+  ((CEIL_V[0] - STOCK_CAP) / STOCK_CAP) * 100,
+);
 
 export const xTicks = [
   { v: 0, mph: "0" },

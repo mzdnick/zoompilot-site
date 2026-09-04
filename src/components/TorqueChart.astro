@@ -1,9 +1,9 @@
 ---
-// The EPS behavior chart, section 01: old vs new steering response
-// across the full speed range. X = speed, Y = EPS torque (CAN counts).
-// All geometry lives in src/data/chart-geometry.js, shared with the
-// wiki's copy of this chart (scripts/gen-wiki-chart.mjs) so the two
-// can never drift apart.
+// The EPS authority chart, section 01: how much steering torque the
+// EPS can actually apply at each speed, and how much of it each
+// controller will ask for. All geometry lives in
+// src/data/chart-geometry.js, shared with the wiki's copy of this
+// chart (scripts/gen-wiki-chart.mjs) so the two can never drift apart.
 import {
   X0,
   X1,
@@ -14,11 +14,10 @@ import {
   CLIFF_MID,
   x,
   y,
-  shownBands,
   zpPath,
   stockPath,
-  ceilingPath,
-  scalePath,
+  GAP_V,
+  GAP_PCT,
   xTicks,
   yTicks,
 } from "../data/chart-geometry.js";
@@ -32,7 +31,7 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Steering torque across speed, one held corner demand, up to about 45 mph. Measured curves: the EPS torque ceiling, near 1148 counts at neighborhood speeds and ramping down nine measured points to 620 by the cliff at about 32 mph; the STEER_MAX CAN scale, 1200 counts stepping to 800 across the cliff window — a unit conversion and PID limit, not a torque step. zoompilot's line comes from the learned per-band gain and friction: it rises through neighborhood speeds, stays continuous through the cliff window, and settles onto stock's level past about 37 mph. Stock openpilot applies one factor at every speed: a flat line."
+      aria-label="Available steering torque from the EPS across speed, up to about 45 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by the cliff at about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about a third less torque than the EPS can deliver below the cliff; above the cliff the EPS clamps both to the same 620."
     >
       <!-- y grid -->
       {
@@ -45,19 +44,7 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
           </g>
         ))
       }
-      <!-- band hairlines: the real bin boundaries inside the window -->
-      {
-        shownBands.map((b) => (
-          <line
-            class="tc-band"
-            x1={x(b.ms)}
-            x2={x(b.ms)}
-            y1={Y1}
-            y2={Y0 + 6}
-          />
-        ))
-      }
-      <!-- the measured cliff -->
+      <!-- the cliff: where the ceiling bottoms out -->
       <line
         class="tc-cliff"
         x1={x(CLIFF_MID)}
@@ -68,25 +55,26 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
       <text class="tc-cliff-label" x={x(CLIFF_MID) + 8} y={Y0 + 10}>
         the cliff · ~32 mph
       </text>
-      <!-- the CAN scale: unit conversion and PID limits, not torque -->
-      <path id="tc-scale" class="tc-scale" d={scalePath} />
-      <text class="tc-text" x={X0 + 8} y={y(1200) - 8} text-anchor="start">
-        STEER_MAX · CAN scale · conversion + PID limits
+      <!-- the gap stock leaves on the table, drawn in the flat region -->
+      <line
+        class="tc-gap"
+        x1={x(GAP_V)}
+        x2={x(GAP_V)}
+        y1={y(1148)}
+        y2={y(800)}
+      />
+      <text class="tc-zp-label" x={x(GAP_V) + 8} y={y(980)}>
+        +{GAP_PCT}% torque
       </text>
-      <!-- measured: the EPS's own applied-torque ceiling -->
-      <path id="tc-ceiling" class="tc-ceiling" d={ceilingPath} />
-      <text class="tc-text" x={X1 - 4} y={y(620) - 10} text-anchor="end">
-        EPS ceiling · measured
-      </text>
-      <!-- old behavior: one factor for every speed -->
+      <!-- stock: one flat cap, then EPS-limited like everyone -->
       <path id="tc-stock" class="tc-stock" d={stockPath} />
-      <text class="tc-stock-label" x={X1 - 4} y={y(560) + 16} text-anchor="end">
-        stock openpilot · one factor, all speeds
+      <text class="tc-stock-label" x={X0 + 8} y={y(800) + 16} text-anchor="start">
+        stock openpilot · one flat 800-count cap
       </text>
-      <!-- new behavior: the learned tables, one held demand -->
+      <!-- zoompilot: the full measured ceiling -->
       <path id="tc-zp" class="tc-zp" d={zpPath} />
-      <text class="tc-zp-label" x={x(0.6)} y={y(900) - 22}>
-        zoompilot · learned per-band torque
+      <text class="tc-zp-label" x={X0 + 8} y={y(1148) - 8} text-anchor="start">
+        zoompilot · the full measured ceiling
       </text>
       <!-- axes -->
       <line class="tc-axis" x1={X0} x2={X1} y1={Y1} y2={Y1} />
@@ -116,25 +104,23 @@ const wikiUrl = `${repo.wiki}/technical/lateral-tune/`;
         transform={`translate(14 ${Y1 - 6}) rotate(-90)`}
         text-anchor="start"
       >
-        EPS torque · CAN counts
+        available EPS torque · CAN counts
       </text>
     </svg>
   </div>
   <figcaption class="tchart-cap">
-    One corner demand, held constant. The counts it needs come from the
-    EPS's own learned tables — gain and friction per speed band,
-    interpolated in count space, so the applied torque stays continuous
-    through the cliff: the STEER_MAX step changes the CAN scale and the
-    PID limits, not the torque. Stock openpilot carries one factor and
-    one flat 800-count scale — blind to both the ceiling and the scale.
-    The ceiling, the scale step, and the band boundaries are measured;
-    the demand level is illustrative. Source: the
+    How much steering torque your EPS can actually apply, by speed.
+    zoompilot's controller tracks the measured ceiling at every speed.
+    Stock openpilot caps every command at one flat 800-count scale, so
+    below the cliff it leaves about a third of the available torque
+    unused; past the cliff the EPS clamps both to the same 620. The
+    ceiling, the cliff, and the cap are measured. Source: the
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
 </figure>
 
 <script>
-  /* draw both response lines in when the chart first scrolls into view */
+  /* draw both lines in when the chart first scrolls into view */
   const frame = document.querySelector(".tchart-frame");
   if (
     frame &&
