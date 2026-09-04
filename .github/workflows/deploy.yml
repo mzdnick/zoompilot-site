@@ -67,13 +67,14 @@ jobs:
             --chrome-flags="--headless --no-sandbox" \
             --only-categories=performance,accessibility,best-practices,seo
       - name: assert category scores
-        run: node -e "
-          const r = require('./lh.json');
-          for (const [k, v] of Object.entries(r.categories))
-            console.log(k, Math.round(v.score * 100));
-          const low = Object.entries(r.categories).filter(([, v]) => v.score < 0.9);
-          if (low.length) {
-            console.error('BELOW 0.9:', low.map(([k]) => k).join(', '));
-            process.exit(1);
-          }
-        "
+        run: |
+          node -e '
+            const r = require("./lh.json");
+            for (const [k, v] of Object.entries(r.categories))
+              console.log(k, Math.round(v.score * 100));
+            const low = Object.entries(r.categories).filter(([, v]) => v.score < 0.9);
+            if (low.length) {
+              console.error("BELOW 0.9:", low.map(([k]) => k).join(", "));
+              process.exit(1);
+            }
+          '

@@ -9,7 +9,10 @@
  * between 14.2 and 14.5 m/s (~32 mph); the CX-5 learns across seven
  * bands centered 6.5..35.0 m/s. The two response curves are schematic
  * — the per-band torque table is not published — drawn to show the
- * documented behavior: one factor for all speeds vs a tune per band.
+ * documented behavior: one factor for all speeds vs a tune per band
+ * below the cliff, and output identical to stock above it. The axis
+ * stops at ~45 mph because past the cliff zoompilot is functionally
+ * stock; there is nothing more to show.
  */
 
 export const X0 = 46,
@@ -18,7 +21,7 @@ export const X0 = 46,
   Y1 = 282,
   VIEW_W = 640,
   VIEW_H = 320,
-  V_MAX = 40,
+  V_MAX = 20,
   C_MAX = 1300;
 
 export const CLIFF_LO = 14.2,
@@ -39,23 +42,30 @@ export const bands = [
   { ms: 35.0, mph: 78 },
 ];
 
-/* schematic response, one corner demand held constant: one value per
- * band, held from each band's midpoint to the next. The step at the
- * cliff mirrors the measured scale change (1200 -> 800). */
-export const zpValues = [950, 850, 780, 520, 540, 570, 600];
-export const STOCK = 700;
+/* the chart window ends past the cliff, where zoompilot already
+ * matches stock; bands above V_MAX draw no hairline */
+export const shownBands = bands.filter((b) => b.ms < V_MAX);
 
-export const mids = bands.map((b, i) =>
-  i < bands.length - 1 ? (b.ms + bands[i + 1].ms) / 2 : V_MAX,
+/* schematic response, one corner demand held constant: one value per
+ * band, held from each band's midpoint to the next. Past the cliff
+ * zoompilot's output is functionally stock, so every band above it
+ * sits at STOCK and the zoompilot line merges with the stock line. */
+export const STOCK = 700;
+export const zpValues = [950, 850, 780, STOCK];
+
+export const mids = shownBands.map((b, i) =>
+  i < shownBands.length - 1
+    ? (b.ms + shownBands[i + 1].ms) / 2
+    : V_MAX,
 );
 
 export const zpPath =
   `M ${x(0)} ${y(zpValues[0])} ` +
-  bands
+  shownBands
     .map((b, i) => {
       /* the drop to the next band happens at the cliff, not at the
        * band midpoint, so the step lines up with the measured scale */
-      if (b.ms === 12.0 && bands[i + 1]) {
+      if (b.ms === 12.0 && shownBands[i + 1]) {
         return `L ${x(CLIFF_LO)} ${y(zpValues[i])} L ${x(CLIFF_HI)} ${y(
           zpValues[i + 1],
         )} `;
@@ -72,10 +82,10 @@ export const scalePath =
 
 export const xTicks = [
   { v: 0, mph: "0" },
+  { v: 5, mph: "11" },
   { v: 10, mph: "22" },
+  { v: 15, mph: "34" },
   { v: 20, mph: "45" },
-  { v: 30, mph: "67" },
-  { v: 40, mph: "90" },
 ];
 
 export const yTicks = [400, 800, 1200];

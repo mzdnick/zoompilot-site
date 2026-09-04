@@ -24,7 +24,7 @@ import {
   CLIFF_MID,
   x,
   y,
-  bands,
+  shownBands,
   zpPath,
   stockPath,
   scalePath,
@@ -68,7 +68,7 @@ const grid = yTicks
   )
   .join("\n  ");
 
-const bandLines = bands
+const bandLines = shownBands
   .map(
     (b) =>
       `<line x1="${x(b.ms)}" x2="${x(b.ms)}" y1="${Y1}" y2="${
@@ -89,8 +89,8 @@ const xLabels = xTicks
   )
   .join("\n  ");
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Steering torque response across speed. Stock openpilot holds one factor at every speed; zoompilot keeps a learned tune per band and steps down at the cliff near 32 mph, where the measured EPS scale steps from 1200 to 800 counts.">
-  <title>EPS torque response across speed: one factor vs a tune per band</title>
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VIEW_H}" role="img" aria-label="Steering torque response across speed, up to about 45 mph. Stock openpilot holds one factor at every speed; zoompilot keeps a learned tune per band below the cliff near 32 mph, where the measured EPS scale steps from 1200 to 800 counts, and matches stock exactly above it.">
+  <title>EPS torque response across speed: one factor vs a tune per band, stock past the cliff</title>
   <rect x="0.5" y="0.5" width="${VIEW_W - 1}" height="${VIEW_H - 1}" rx="14" fill="${C.panel}" stroke="rgba(255,255,255,0.09)"/>
   ${grid}
   ${bandLines}
@@ -107,7 +107,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW_W} ${VI
   <path d="${zpPath}" fill="none" stroke="${C.accent}" stroke-width="2"/>
   <text x="${x(0.6)}" y="${y(950) - 10}" fill="${
     C.accent
-  }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">zoompilot · a learned tune per band</text>
+  }" font-family='${C.mono}' font-size="10.5" letter-spacing="0.04em">zoompilot · a learned tune per band, stock past the cliff</text>
   <line x1="${X0}" x2="${X1}" y1="${Y1}" y2="${Y1}" stroke="${C.axis}"/>
   <line x1="${X0}" x2="${X0}" y1="${Y0}" y2="${Y1}" stroke="${C.axis}"/>
   ${xLabels}
