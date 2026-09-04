@@ -71,25 +71,26 @@ const appLd = {
         idx="01"
         id="h-steering"
         title="steering improvements"
-        intro="The 2022-25 CX-5 EPS has been reverse-engineered, so zoompilot can use all of its available torque."
+        intro="The 2022-25 CX-5 electronic power steering (EPS) motor has been reverse-engineered, so that zoompilot can make use of its full range of available torque."
       />
       <Ledger
         items={[
           {
-            dt: "Fits your Mazda, stock or swapped",
-            dd: "Is the electric steering motor from a 2022-25 CX-5 in your Mazda — factory-fitted or swapped in? zoompilot reads its firmware and steers your car to a stop, just like a factory car.",
+            dt: "EPS-swaps supported",
+            dd: "An EPS from a 2022-25 CX-5 allows steer-to-zero capabilities. zoompilot recognizes the EPS — factory-fitted or swapped — and automatically adapts.",
           },
           {
             dt: "Speed-dependent torque",
-            dd: "zoompilot uses the motor's full torque curve. That means firmer help around town and fewer wobbles on the highway.",
+            dd: "Mazda EPS allow for greater steering torque at lower speeds. zoompilot uses the full range of torque available to the EPS, enabling up to 44% more torque over stock openpilot.",
           },
+          //similar to above
+          //{
+            //dt: "Tuned for every speed",
+            //dd: "One setting for all speeds is wrong at most of them. zoompilot learns seven speed ranges, each with its own steering factor and friction.",
+          //},
           {
-            dt: "Tuned for every speed",
-            dd: "One setting for all speeds is wrong at most of them. zoompilot learns seven speed ranges, each with its own steering factor and friction.",
-          },
-          {
-            dt: "Assist that builds fast",
-            dd: "zoompilot asks the steering motor for its full 12 units per frame (stock openpilot stops at 10), so help arrives the moment you turn the wheel.",
+            dt: "Faster torque ramping",
+            dd: "zoompilot commands up to 12 torque units per frame, compared with stock openpilot’s 10, allowing the EPS to reach the requested torque faster.",
           },
           {
             dt: "Factory-matched specs",
