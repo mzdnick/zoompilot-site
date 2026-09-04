@@ -71,17 +71,17 @@ const appLd = {
         idx="01"
         id="h-steering"
         title="steering improvements"
-        intro="Using a data-driven approach, I reverse-engineered the steering hardware to utilize the EPS to its full potential."
+        intro="I reverse-engineered the steering hardware, then tuned zoompilot to use all of it."
       />
       <Ledger
         items={[
           {
             dt: "Fits your Mazda, stock or swapped",
-            dd: "Running the electric steering motor from a 2022-25 CX-5 — factory-fitted or swapped in? zoompilot reads its firmware and steers your car to a stop, just like a factory car.",
+            dd: "Is the electric steering motor from a 2022-25 CX-5 in your Mazda — factory-fitted or swapped in? zoompilot reads its firmware and steers your car to a stop, just like a factory car.",
           },
           {
             dt: "Speed-dependent torque",
-            dd: "We encode the full torque curve, giving you more confident steering in neighborhoods and fewer wobbles on the highway.",
+            dd: "zoompilot uses the motor's full torque curve. That means firmer help around town and fewer wobbles on the highway.",
           },
           {
             dt: "Tuned for every speed",
@@ -111,25 +111,25 @@ const appLd = {
         idx="02"
         id="h-cruise"
         title="radar cruise enhancements"
-        intro="I entirely rewrote sunnypilot&rsquo;s cruise systems for Mazda. Instead of independent features fighting for control, one unified system manages your set speed."
+        intro="I rewrote sunnypilot&rsquo;s cruise systems for Mazda. One system manages your set speed — not several features fighting for control."
       />
       <Ledger
         items={[
           {
             dt: "Intelligent-Cruise-Button-Management (ICBM)",
-            dd: "The core system that allows zoompilot to safely manage your cruise set speed.",
+            dd: "The core system. It lets zoompilot manage your cruise set speed safely.",
           },
           {
             dt: "Speed-Limit-Assist (SLA)",
-            dd: "Automatically adjusts your cruise speed when passing a sign (using nav SD or OpenStreetMap data) with optional +/- offsets.",
+            dd: "Adjusts your cruise speed automatically when you pass a speed sign. Uses nav SD or OpenStreetMap data, with optional +/- offsets.",
           },
           {
             dt: "Smart Cruise",
-            dd: "Automatically reduces your speed before a curve and resumes afterward using vision or map data.",
+            dd: "Slows the car before a curve and speeds up again afterward, using vision or map data.",
           },
           {
             dt: "Deceleration Overshoot (Alpha)",
-            dd: "Compensates for slow MRCC response times by dropping the requested speed faster before a turn.",
+            dd: "Mazda's stock cruise (MRCC) reacts slowly before a turn. This drops the set speed earlier, so the car slows in time.",
           },
         ]}
       />
@@ -148,11 +148,11 @@ const appLd = {
         items={[
           {
             dt: "Place hands on wheel alert",
-            dd: "Analyzed logs proved that LKAS_BLOCK does not disengage steering on 2022+ models, so I disabled this false alert while keeping real faults active.",
+            dd: "On 2022+ cars, logs show the LKAS_BLOCK alert does not actually stop steering. I turned that false alert off. Real faults still warn you.",
           },
           {
             dt: "Steering override hysteresis",
-            dd: "Added the same override filter used by Tesla and Rivian to prevent potholes or rough patches from tripping phantom takeovers.",
+            dd: "A pothole can look like you tugging the wheel. zoompilot filters that out, with the same override filter Tesla and Rivian use.",
           },
         ]}
       />
@@ -201,18 +201,17 @@ const appLd = {
         <p class="warn-label">warning · safety features disabled</p>
         <p>
           <strong
-            >If Alpha Longitudinal is enabled the car&rsquo;s radar is
-            turned off.</strong
+            >Alpha longitudinal turns the car&rsquo;s radar off.</strong
           >
-          Automatic Emergency Braking (AEB) and Forward Collision Alerts are
-          DISABLED when alpha longitudinal is on.
+          Automatic Emergency Braking (AEB) and forward collision alerts
+          are DISABLED while it is on.
         </p>
       </div>
       <Ledger
         items={[
           {
             dt: "Experimental mode",
-            dd: "Uses the openpilot model end-to-end and enables stop sign/light braking. Experimental models do not often accelerate to the set speed.",
+            dd: "The openpilot model drives the gas and brakes directly. It can brake for stop signs and lights. It often holds below the set speed.",
           },
           {
             dt: "Expect dash errors and safety issues",
