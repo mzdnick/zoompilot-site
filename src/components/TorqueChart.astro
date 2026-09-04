@@ -32,7 +32,7 @@ const gapLabelY = y(980);
     <svg
       viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       role="img"
-      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling. Stock openpilot caps every command at one flat 800-count scale — about 44 percent less torque below the ramp; past about 29 mph the EPS clamps both to the same torque, drawn as one line the two share."
+      aria-label="Available steering torque from the EPS across speed, up to 40 mph. The EPS can apply up to 1148 counts at neighborhood speeds, ramping down through nine measured points to 620 by about 32 mph. zoompilot tracks that measured ceiling, so its line is the ceiling: up to 44 percent more torque than stock, with no hardware mods. Stock openpilot caps every command at one flat 800-count scale; past about 29 mph the EPS clamps both to the same torque, drawn as one line the two share."
     >
       <!-- y grid -->
       {
@@ -54,8 +54,11 @@ const gapLabelY = y(980);
         y2={y(800)}
       />
       <text class="tc-zp-label" x={x(GAP_V) + 8} y={gapLabelY}>
-        <tspan x={x(GAP_V) + 8} dy="0">{GAP_PCT}% more torque</tspan>
-        <tspan x={x(GAP_V) + 8} dy="13">than stock</tspan>
+        <tspan class="tc-gap-note" x={x(GAP_V) + 8} dy="0">up to</tspan>
+        <tspan x={x(GAP_V) + 8} dy="13">{GAP_PCT}% more torque</tspan>
+        <tspan class="tc-gap-tag" x={x(GAP_V) + 8} dy="13">
+          with no hardware mods
+        </tspan>
       </text>
       <!-- stock: one flat cap, then EPS-limited like everyone -->
       <path id="tc-stock" class="tc-stock" d={stockPath} />
@@ -104,12 +107,11 @@ const gapLabelY = y(980);
   <figcaption class="tchart-cap">
     How much steering torque your EPS can actually apply, by speed.
     zoompilot's line is the EPS's measured ceiling — it tracks it at
-    every speed. Stock openpilot caps every command at one flat
-    800-count scale, so below the ceiling's ramp it leaves about a
-    third of the available torque unused. Past the ramp the EPS clamps
-    both to the same torque — the dashed stretch is the part the two
-    lines share. The ceiling and the cap are measured.
-    Source: the
+    every speed, so a stock car gains up to 44% more steering torque
+    with no hardware mods. Stock openpilot caps every command at one
+    flat 800-count scale. Past the ceiling's ramp the EPS clamps both
+    to the same torque — the dashed stretch is the part the two lines
+    share. The ceiling and the cap are measured. Source: the
     <a href={wikiUrl}>lateral tune measurement record</a>.
   </figcaption>
 </figure>
