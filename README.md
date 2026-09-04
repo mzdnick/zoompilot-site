@@ -6,10 +6,12 @@ sections (steering, cruise, alerts, sensors, alpha longitudinal,
 coverage, compare, questions, setup, install, first drive, changelog),
 and the footer paint line.
 
-The docs live separately in the
-[zoompilot wiki](https://github.com/zoompilot/wiki), published at
-[wiki.zoompilot.ai](https://wiki.zoompilot.ai). This site links into the
-wiki and syncs structured content from it (see "Wiki collaboration").
+The docs live in the wiki, published at
+https://zoompilot-wiki.pages.dev (the wiki.zoompilot.ai domain is the
+intended home but does not resolve yet; `src/data/changelog.js`
+`repo.wiki` carries the live host — flip that one line when the domain
+goes live). This site links into the wiki and syncs structured content
+both directions (see "Wiki collaboration").
 
 ## Quick start
 
