@@ -4,16 +4,23 @@
  *
  *     npm run sync:wiki
  *
- * Three jobs:
+ * Five jobs:
  *   1. wiki -> site: the supported-cars table into
  *      src/data/supported-cars.json (section 06 renders it).
  *   2. site -> wiki: the releases page (docs/releases/changelog.md)
  *      regenerated from src/data/changelog.js — the site data file is
  *      the changelog source of truth. The wiki's "Upstream release
  *      notes" tail is preserved verbatim.
- *   3. site -> wiki: docs/assets/steering-torque.svg, the EPS behavior
- *      chart, rendered from src/data/chart-geometry.js (the same
- *      source the site's chart uses). See scripts/gen-wiki-chart.mjs.
+ *   3. site -> wiki: docs/assets/steering-torque.svg and
+ *      docs/assets/steering-torque-data.js, the EPS behavior chart
+ *      (static + live), rendered from src/data/chart-geometry.js (the
+ *      same source the site's chart uses). See
+ *      scripts/gen-wiki-chart.mjs.
+ *   4. wiki -> wiki: docs/technical/route-library.md, an index of
+ *      every route citation in the technical notes, rebuilt from
+ *      those pages.
+ *   5. site -> wiki: docs/assets/js/car-checker-data.js, the
+ *      supported-cars data for the wiki's car checker.
  *
  * Deeper reuse (rendering whole wiki pages inside the site) needs a
  * remark layer for Material-for-MkDocs syntax — admonitions ( !!! ),
@@ -27,7 +34,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { generateWikiChart } from "./gen-wiki-chart.mjs";
+import {
+  generateWikiChart,
+  generateWikiChartData,
+} from "./gen-wiki-chart.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
@@ -138,3 +148,156 @@ console.log(`changelog -> wiki/docs/releases/changelog.md (${releases.length} re
 
 const chartPath = generateWikiChart();
 console.log(`chart -> ${chartPath.split("zoompilot-wiki/")[1]}`);
+const chartDataPath = generateWikiChartData();
+console.log(`chart data -> ${chartDataPath.split("zoompilot-wiki/")[1]}`);
+
+/* ---------- job 4: route evidence index, wiki -> wiki ---------- */
+
+/*
+ * The technical notes cite routes as evidence (route 132, route
+ * 7f9e3ff336, ...). This job scans docs/technical/*.md for those
+ * citations and regenerates docs/technical/route-library.md: every
+ * route ref, the page, and the claim it backs. A ref in full
+ * dongle/route form (dongleid/date--time) links to comma connect;
+ * the test-fleet shorthand is listed as-is, because inventing full
+ * IDs would be fabrication.
+ */
+import { readdirSync, statSync } from "node:fs";
+
+const technicalDir = join(wiki, "technical");
+const routePage = join(technicalDir, "route-library.md");
+
+const FULL_ROUTE = /([0-9a-f]{16})\/(\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2})/g;
+/* fleet shorthand: hex-ish tokens after "route(s)", optionally listed
+ * with commas / + / "and". Tokens are validated against hex below, so
+ * prose like "route ids" or "routes behind every number" is rejected —
+ * but the fleet's own "be" / "fe" style refs pass. */
+const ROUTE_TOKEN = "[0-9a-f]{2,16}";
+const SHORT_ROUTE = new RegExp(
+  "\\broutes?\\s+(" +
+    ROUTE_TOKEN +
+    "((?:\\s*(?:,|\\+|and)\\s*)" +
+    ROUTE_TOKEN +
+    ")*)",
+  "g",
+);
+/* made of hex letters but never a route */
+const REF_STOP = new Set(["id"]);
+
+function sentencesOf(text) {
+  const prose = [];
+  let inFence = false;
+  for (const line of text.split("\n")) {
+    if (line.trim().startsWith("```")) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    if (line.trim().startsWith("|")) continue;
+    if (line.trim().startsWith("#")) continue;
+    prose.push(line);
+  }
+  return prose
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .split(/(?<=[.;])\s+/)
+    .map((s) => s.trim());
+}
+
+function validShortRef(group) {
+  const tokens = group.split(/\s*(?:,|\+|and)\s*/);
+  return tokens.every((t) => /^[0-9a-f]{2,16}$/.test(t) && !REF_STOP.has(t));
+}
+
+const citations = [];
+for (const name of readdirSync(technicalDir).sort()) {
+  const path = join(technicalDir, name);
+  if (!statSync(path).isFile() || !name.endsWith(".md")) continue;
+  if (name === "route-library.md") continue;
+  if (name === "index.md") continue;
+  const text = readFileSync(path, "utf8");
+  const seen = new Set();
+  for (const sentence of sentencesOf(text)) {
+    const refs = new Set();
+    for (const m of sentence.matchAll(FULL_ROUTE)) {
+      refs.add(`${m[1]}/${m[2]}`);
+    }
+    for (const m of sentence.matchAll(SHORT_ROUTE)) {
+      if (validShortRef(m[1])) refs.add(m[1]);
+    }
+    for (const ref of refs) {
+      const key = ref + "|" + sentence;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      citations.push({
+        ref,
+        page: `technical/${name}`,
+        context:
+          sentence.length > 160 ? sentence.slice(0, 157) + "…" : sentence,
+      });
+    }
+  }
+}
+
+/* keep one row per (ref, page, context); refs repeat across claims */
+citations.sort((a, b) =>
+  a.page === b.page
+    ? a.ref.localeCompare(b.ref)
+    : a.page.localeCompare(b.page),
+);
+
+function refCell(ref) {
+  if (FULL_ROUTE.test(ref)) {
+    FULL_ROUTE.lastIndex = 0;
+    return `[connect](https://connect.comma.ai/${ref}) · \`${ref}\``;
+  }
+  FULL_ROUTE.lastIndex = 0;
+  return `\`${ref}\``;
+}
+
+const routeDoc = [
+  "# Route library — the evidence index",
+  "",
+  "<!-- Generated by the site repo's scripts/sync-wiki.mjs",
+  "     (`npm run sync:wiki`) from the technical pages. Edit those",
+  "     pages, not this one: manual edits are lost on the next sync. -->",
+  "",
+  "Every route the technical notes cite, with the claim it backs. This",
+  "is the record's evidence locker: a number in a table is only as good",
+  "as the drive it was measured on.",
+  "",
+  "Most entries use the project's test-fleet shorthand (`route 132`),",
+  "which is stable inside the zoompilot sources but is not directly",
+  "openable. The full `dongleid/date--time` routes link straight to",
+  "[comma connect](https://connect.comma.ai). Ask on the",
+  "[Discord](https://discord.gg/jFWkHC2uhh) for a full route behind a",
+  "shorthand entry.",
+  "",
+  "| Route ref | Page | What it backs |",
+  "| --- | --- | --- |",
+  ...citations.map(
+    (c) => `| ${refCell(c.ref)} | ${c.page.replace("technical/", "")} | ${c.context} |`,
+  ),
+  "",
+].join("\n");
+
+writeFileSync(routePage, routeDoc);
+console.log(`route library -> ${routePage.split("zoompilot-wiki/")[1]} (${citations.length} citations)`);
+
+/* ---------- job 5: car checker data, site -> wiki ---------- */
+
+const carsJson = JSON.parse(
+  readFileSync(join(root, "src", "data", "supported-cars.json"), "utf8"),
+);
+const checkerFile = join(wiki, "assets", "js", "car-checker-data.js");
+writeFileSync(
+  checkerFile,
+  [
+    "/* Generated by the site repo's scripts/sync-wiki.mjs",
+    "   (`npm run sync:wiki`) from src/data/supported-cars.json.",
+    "   Do not edit. Rendered by docs/assets/js/car-checker.js. */",
+    `window.ZP_CARS = ${JSON.stringify(carsJson)};`,
+    "",
+  ].join("\n"),
+);
+console.log(`car checker data -> ${checkerFile.split("zoompilot-wiki/")[1]} (${carsJson.length} cars)`);

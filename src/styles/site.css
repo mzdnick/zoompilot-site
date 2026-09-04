@@ -1059,6 +1059,13 @@ ol.log ul ul {
   stroke-dasharray: 2 3;
   opacity: 0.7;
 }
+/* the gap callout's qualifiers: quiet gray above, amber payoff below */
+.tc-gap-note {
+  fill: var(--faint);
+}
+.tc-gap-tag {
+  fill: var(--warn);
+}
 .tc-zp {
   fill: none;
   stroke: var(--accent);

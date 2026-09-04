@@ -37,8 +37,8 @@ export const x = (v) => X0 + (v / V_MAX) * (X1 - X0);
 export const y = (c) => Y1 - (c / C_MAX) * (Y1 - Y0);
 
 /* the EPS's own applied-torque ceiling, nine measured points */
-const CEIL_BP = [8.0, 8.5, 9.4, 10.3, 11.2, 12.1, 13.0, 13.9, 14.5];
-const CEIL_V = [1148, 1132, 1092, 1048, 1012, 920, 808, 676, 620];
+export const CEIL_BP = [8.0, 8.5, 9.4, 10.3, 11.2, 12.1, 13.0, 13.9, 14.5];
+export const CEIL_V = [1148, 1132, 1092, 1048, 1012, 920, 808, 676, 620];
 
 /* stock's single flat cap */
 export const STOCK_CAP = 800;
