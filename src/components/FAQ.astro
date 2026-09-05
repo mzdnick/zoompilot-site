@@ -8,7 +8,10 @@ const faqs = [
   {
     q: "Which cars does zoompilot cover?",
     a: `<strong>The CX-5 2022–2025 is the primary target</strong>, with full
-      support on the CX-9 2021–2023. Older Mazdas are covered with the
+      support on the CX-9 2021–2023. The other Mazda platforms in the
+      support list run on the stock steering envelope: CX-5 2017–2021,
+      CX-9 2016–2020, and — on community reports — the Mazda 3 2017–2018
+      and Mazda 6 2017–2021. Older Mazdas gain steer-to-zero with the
       steering motor from a 2022-25 CX-5 swapped in — fingerprinting
       identifies the motor by its firmware. <a href="${repo.wiki}/getting-started/supported-cars/">Supported cars on the wiki</a>.`,
   },
@@ -32,7 +35,11 @@ const faqs = [
       learned across seven speed ranges, limits that follow what the
       motor can really do, steering to 0 mph, VIN and EPS fingerprinting,
       the Mazda cruise and alert fixes, and the car's own sensors wired
-      in. The <a href="#compare">compare table</a> lays it out.`,
+      in. On a swapped EPS the difference is sharpest: zoompilot enables
+      steer-to-zero by identifying the motor, while sunnypilot needs the
+      CX-5 2022-25 platform selected by hand — which applies CX-5
+      steering ratio, wheelbase, and mass to your car. The
+      <a href="#compare">compare table</a> lays it out.`,
   },
   {
     q: "Does it cost anything?",

@@ -9,17 +9,20 @@ interface Props {
 }
 const { cars } = Astro.props;
 
-/* status text -> pill tone. "primary" outranks "full" in the wording. */
+/* status text -> pill tone. "primary" outranks "full" in the wording;
+ * "reported" marks community-reported platforms. */
 function tone(status: string) {
   const s = status.toLowerCase();
   if (s.includes("primary")) return "primary";
   if (s.includes("full")) return "full";
+  if (s.includes("reported")) return "reported";
   return "supported";
 }
 const TONE_LABEL: Record<string, string> = {
   primary: "primary target",
   full: "full support",
   supported: "supported",
+  reported: "reported working",
 };
 ---
 

@@ -14,7 +14,9 @@ import { repo } from "../data/changelog.js";
       <select id="ck-model">
         <option value="cx5" selected>CX-5</option>
         <option value="cx9">CX-9</option>
-        <option value="other">another Mazda (EPS swap)</option>
+        <option value="mazda3">Mazda 3</option>
+        <option value="mazda6">Mazda 6</option>
+        <option value="other">another Mazda</option>
       </select>
     </label>
     <label id="ck-year-wrap">
@@ -28,14 +30,25 @@ import { repo } from "../data/changelog.js";
 <script>
   import { repo } from "../data/changelog.js";
 
-  /* year ranges per the wiki's supported-cars table */
+  /* year ranges per the wiki's supported-cars table. Tiers per the
+   * wiki: full = primary targets, stock = stock steering envelope,
+   * reported = community-reported. Years outside every tier fall to
+   * the swap-path answer. */
   const MODELS: Record<
     string,
-    { label: string; years: number[]; fullFrom: number; fullTo: number }
+    {
+      label: string;
+      years: number[];
+      full?: [number, number];
+      stock?: [number, number];
+      reported?: [number, number];
+    }
   > = {
-    cx5: { label: "the CX-5", years: range(2013, 2026), fullFrom: 2022, fullTo: 2025 },
-    cx9: { label: "the CX-9", years: range(2016, 2024), fullFrom: 2021, fullTo: 2023 },
-    other: { label: "your Mazda", years: range(1995, 2026), fullFrom: 0, fullTo: 0 },
+    cx5: { label: "the CX-5", years: range(2013, 2026), full: [2022, 2025], stock: [2017, 2021] },
+    cx9: { label: "the CX-9", years: range(2016, 2024), full: [2021, 2023], stock: [2016, 2020] },
+    mazda3: { label: "the Mazda 3", years: range(2017, 2019), reported: [2017, 2018] },
+    mazda6: { label: "the Mazda 6", years: range(2017, 2022), reported: [2017, 2021] },
+    other: { label: "your Mazda", years: range(1995, 2026) },
   };
   function range(a: number, b: number) {
     return Array.from({ length: b - a + 1 }, (_, i) => b - i);
@@ -54,10 +67,11 @@ import { repo } from "../data/changelog.js";
       .map((y) => `<option value="${y}">${y}</option>`)
       .join("");
     /* start on the newest full-support year for each model */
-    const mid = m.fullFrom || m.years[Math.floor(m.years.length / 2)];
+    const mid = m.full ? m.full[0] : m.years[Math.floor(m.years.length / 2)];
     yearSel.value = String(
-      m.years.find((y) => y <= (m.fullTo || m.years[0]) && y >= mid) ??
-        m.years[0],
+      m.years.find(
+          (y) => y <= (m.full ? m.full[1] : m.years[0]) && y >= mid,
+        ) ?? m.years[0],
     );
     yearWrap.hidden = modelSel.value === "other";
   }
@@ -76,7 +90,7 @@ import { repo } from "../data/changelog.js";
           "longitudinal is enabled.",
       };
     }
-    if (year >= m.fullFrom && year <= m.fullTo) {
+    if (m.full && year >= m.full[0] && year <= m.full[1]) {
       return {
         tone: "yes",
         head: `Yes — ${m.label} ${year} is covered.`,
@@ -86,13 +100,34 @@ import { repo } from "../data/changelog.js";
             : "Full support with factory-matched specs. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5.",
       };
     }
+    if (m.stock && year >= m.stock[0] && year <= m.stock[1]) {
+      return {
+        tone: "yes",
+        head: `Yes — ${m.label} ${year} runs, on the stock steering motor.`,
+        body:
+          "Supported on the stock steering envelope: no steer-to-zero. " +
+          "With a 2022-25 CX-5 motor swapped in, steering works down " +
+          "to 0 mph and alpha longitudinal opens — radar and AEB off " +
+          "while it is on.",
+      };
+    }
+    if (m.reported && year >= m.reported[0] && year <= m.reported[1]) {
+      return {
+        tone: "yes",
+        head: `Reported working — ${m.label} ${year}.`,
+        body:
+          "Community drives report zoompilot runs on the stock motor " +
+          "and steering envelope; fewer test miles than the CX-5 and " +
+          "CX-9. A 2022-25 CX-5 motor swap unlocks steer-to-zero.",
+      };
+    }
     return {
       tone: "no",
-      head: `Not on the stock steering — but the swap path may work.`,
+      head: `Outside the platform list — but the swap path may work.`,
       body:
         `${m.label.charAt(0).toUpperCase() + m.label.slice(1)} ${year} ` +
-        "predates the 2022+ electric power steering. With the motor from " +
-        "a 2022-25 CX-5 swapped in, it is supported, like any older Mazda.",
+        "is outside the platforms in the support list. With the motor " +
+        "from a 2022-25 CX-5 swapped in, the swap path may work.",
     };
   }
 

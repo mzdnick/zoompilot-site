@@ -45,7 +45,7 @@ const appLd = {
   applicationCategory: "Driver assistance software",
   operatingSystem: "comma 3X, comma 3",
   description:
-    "An openpilot fork for any Mazda running the 2022-25 CX-5 electric power steering — factory-fitted or swapped in — tuned to the car's measured steering limits instead of another car's spec sheet.",
+    "An openpilot fork that steers to zero on any Mazda with a 2022-25 CX-5 electric power steering — factory-fitted or swapped in, detected automatically — and runs on every supported Mazda platform, tuned to measured steering limits instead of another car's spec sheet.",
   isAccessibleForFree: true,
   url: Astro.site,
   sameAs: [repo.github, repo.wiki],
@@ -54,7 +54,7 @@ const appLd = {
 
 <Base
   title="zoompilot: a Mazda-optimized fork of sunnypilot"
-  description="An openpilot fork for any Mazda running the 2022-25 CX-5 electric power steering — factory-fitted or swapped in — tuned to the car's measured steering limits instead of another car's spec sheet."
+  description="An openpilot fork that steers to zero on any Mazda with a 2022-25 CX-5 electric power steering — factory-fitted or swapped in, detected automatically — and runs on every supported Mazda platform, tuned to measured steering limits instead of another car's spec sheet."
 >
   <TopBar />
 
@@ -77,11 +77,11 @@ const appLd = {
         items={[
           {
             dt: "EPS-swaps supported",
-            dd: "An EPS from a 2022-25 CX-5 allows steer-to-zero capabilities. zoompilot recognizes the EPS — factory-fitted or swapped — and automatically adapts.",
+            dd: "An EPS from a 2022-25 CX-5 allows steer-to-zero capabilities. zoompilot recognizes the EPS — factory or swapped — and automatically adapts.",
           },
           {
             dt: "Speed-dependent torque",
-            dd: "Mazda EPS allow for greater steering torque at lower speeds. zoompilot uses the full range of torque available to the EPS, enabling up to 44% more torque over stock openpilot.",
+            dd: "The Mazda EPS allow for greater steering torque at lower speeds. zoompilot uses the full range of torque available to the EPS, enabling up to 44% more torque over stock openpilot.",
           },
           //similar to above
           //{
@@ -94,7 +94,7 @@ const appLd = {
           },
           {
             dt: "Factory-matched specs",
-            dd: "Stock openpilot runs on another car&rsquo;s spec sheet. zoompilot sets steering ratio, mass, wheelbase, and lag to Mazda&rsquo;s real figures, then refines them against thousands of miles of driving data.",
+            dd: "Stock openpilot uses unoptimized values for Mazda platforms. zoompilot sets steering ratio, mass, wheelbase, and lag to Mazda&rsquo;s real figures, then refines them against thousands of miles of driving data.",
           },
         ]}
       />
@@ -242,7 +242,7 @@ const appLd = {
         idx="06"
         id="h-coverage"
         title="additional Mazdas covered"
-        intro="zoompilot runs on any Mazda with the 2022-25 CX-5 electric power steering (EPS) motor — factory-fitted, or swapped into an older Mazda. The table is synced from the wiki's supported-cars page."
+        intro="zoompilot runs on every supported Mazda platform — CX-5, CX-9, Mazda 3, and Mazda 6 — and steers to zero wherever a 2022-25 CX-5 electric power steering (EPS) motor is fitted, factory or swapped. The table is synced from the wiki's supported-cars page."
       />
       <CarTable cars={cars} />
       <CarChecker />

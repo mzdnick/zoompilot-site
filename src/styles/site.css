@@ -1210,6 +1210,11 @@ ol.log ul ul {
   color: var(--dim);
   border: 1px solid var(--hair-strong);
 }
+/* community-reported: a dashed border says "report, not verified" */
+.pill-reported {
+  color: var(--dim);
+  border: 1px dashed var(--accent);
+}
 
 /* ---------- support checker (section 06) ---------- */
 .checker {
