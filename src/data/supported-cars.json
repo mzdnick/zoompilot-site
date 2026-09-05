@@ -7,7 +7,7 @@
   {
     "car": "CX-9 2021–2023",
     "status": "Full support",
-    "notes": "Factory-matched specs included. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5."
+    "notes": "Runs on the stock steering envelope with its own factory-matched specs. The 2022-25 CX-5 EPS swap adds steer-to-zero and alpha longitudinal. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5."
   },
   {
     "car": "Older Mazdas with a swapped 2022-25 CX-5 EPS motor",

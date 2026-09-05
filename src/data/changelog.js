@@ -121,13 +121,13 @@ export const releases = [
       },
       {
         html: `<b>Alpha longitudinal on the CX-5.</b> openpilot can drive the
-          gas and brakes on the 2022+ CX-5. Read section 05 first: it shuts
+          gas and brakes on the CX-5 2022-25. Read section 05 first: it shuts
           the stock radar down, which takes automatic emergency braking and
           forward collision alerts with it.`,
       },
       {
-        html: `<b>Torque control out of the box.</b> Fresh installs on 22+
-          EPS Mazdas arrive with torque control, self-tune, and
+        html: `<b>Torque control out of the box.</b> Fresh installs on Mazdas
+          with a 2022-25 CX-5 EPS arrive with torque control, self-tune, and
           speed-dependent self-tune already on.`,
       },
       {
