@@ -93,15 +93,22 @@ Direction of travel, decided in the first build:
    `custom.css` mirrors this site's `site.css`.
 2. **Links** — the top bar links to the wiki; sections 01, 02, 04, 05,
    06, 07, and 08 end with a "… on the wiki" deep link.
-3. **Content sync** — `npm run sync:wiki` runs three jobs:
+3. **Content sync** — `npm run sync:wiki` runs five jobs:
    supported cars from the wiki markdown into
    `src/data/supported-cars.json` (wiki -> site); the wiki's
    `releases/changelog.md` regenerated from `src/data/changelog.js`
    (site -> wiki; the page's "Upstream release notes" tail is
-   hand-written and preserved); and the wiki's `steering-torque.svg`
-   from `src/data/chart-geometry.js` (site -> wiki). The wiki is a
+   hand-written and preserved); the wiki's `steering-torque.svg` and
+   `steering-torque-data.js` from `src/data/chart-geometry.js`
+   (site -> wiki); the wiki's `technical/route-library.md` rebuilt
+   from its technical pages (wiki -> wiki); and the wiki's
+   `assets/js/car-checker-data.js` (site -> wiki). A fingerprint guard
+   (`scripts/sync-state.json`) stops the sync when a generated file
+   was hand-edited since the last run; `npm run sync:wiki -- --force`
+   overwrites on purpose. The wiki is a
    sibling checkout (`../zoompilot-wiki`), not a git remote, so run the
-   sync locally and commit in both repos.
+   sync locally and commit in both repos. What syncs is documented for
+   wiki editors in the wiki's `docs/reference/site-sync.md`.
 4. **Full-page reuse (later, needs work)** — wiki pages use
    Material-for-MkDocs markdown ( `!!!` admonitions, `:material-`
    icons, content tabs). Rendering them in Astro needs a small remark

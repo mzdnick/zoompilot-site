@@ -31,7 +31,8 @@
  * git dependency instead of the sibling checkout, and a CI step can
  * open a pull request on the wiki when the data changes.
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -42,6 +43,109 @@ import {
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..");
 const wiki = join(root, "..", "zoompilot-wiki", "docs");
+
+/* ---------- hand-edit guard ----------
+ *
+ * Every generated target is fingerprinted into scripts/sync-state.json
+ * at the end of a run. The next run compares fingerprints first and
+ * STOPS if a target was edited by hand since the last sync — a silent
+ * overwrite is the one failure this script must never have. `--force`
+ * overwrites on purpose:
+ *
+ *     npm run sync:wiki -- --force
+ *
+ * Exception: the changelog page's hand-written tail below
+ * "## Upstream release notes" is not part of the fingerprint, because
+ * the script preserves it by design. See the wiki's
+ * docs/reference/site-sync.md, which documents all of this for
+ * editors.
+ */
+const FORCE = process.argv.includes("--force");
+const statePath = join(here, "sync-state.json");
+const sha256 = (text) => createHash("sha256").update(text).digest("hex");
+
+/* only the generated head of the changelog page is guarded */
+function changelogHead(text) {
+  const mark = text.indexOf("## Upstream release notes");
+  return mark === -1 ? text : text.slice(0, mark);
+}
+
+const managed = [
+  {
+    key: "site:src/data/supported-cars.json",
+    path: join(root, "src", "data", "supported-cars.json"),
+    what:
+      "site src/data/supported-cars.json was edited by hand since the last sync.",
+    fix: "It is generated from the wiki's supported-cars.md table. Edit that table instead.",
+  },
+  {
+    key: "wiki:docs/releases/changelog.md",
+    path: join(wiki, "releases", "changelog.md"),
+    slice: changelogHead,
+    what: "wiki docs/releases/changelog.md was edited by hand since the last sync.",
+    fix: "Release notes belong in this repo's src/data/changelog.js.",
+    safe: 'Text below the "## Upstream release notes" heading is hand-written and always kept.',
+  },
+  {
+    key: "wiki:docs/assets/steering-torque.svg",
+    path: join(wiki, "assets", "steering-torque.svg"),
+    what: "wiki docs/assets/steering-torque.svg was edited by hand since the last sync.",
+    fix: "The chart is generated from this repo's src/data/chart-geometry.js.",
+  },
+  {
+    key: "wiki:docs/assets/steering-torque-data.js",
+    path: join(wiki, "assets", "steering-torque-data.js"),
+    what:
+      "wiki docs/assets/steering-torque-data.js was edited by hand since the last sync.",
+    fix: "The chart data is generated from this repo's src/data/chart-geometry.js.",
+  },
+  {
+    key: "wiki:docs/technical/route-library.md",
+    path: join(wiki, "technical", "route-library.md"),
+    what: "wiki docs/technical/route-library.md was edited by hand since the last sync.",
+    fix: "It is an index rebuilt from the wiki's technical/*.md pages. Edit those pages instead.",
+  },
+  {
+    key: "wiki:assets/js/car-checker-data.js",
+    path: join(wiki, "assets", "js", "car-checker-data.js"),
+    what: "wiki assets/js/car-checker-data.js was edited by hand since the last sync.",
+    fix: "It is generated from the wiki's supported-cars.md table. Edit that table instead.",
+  },
+];
+
+for (const f of managed) if (!f.slice) f.slice = (t) => t;
+
+const state = existsSync(statePath)
+  ? JSON.parse(readFileSync(statePath, "utf8"))
+  : { version: 1, files: {} };
+
+const clashes = [];
+for (const f of managed) {
+  if (!existsSync(f.path)) continue;
+  const now = sha256(f.slice(readFileSync(f.path, "utf8")));
+  if (state.files[f.key] && state.files[f.key] !== now) clashes.push(f);
+}
+if (clashes.length && !FORCE) {
+  console.error("\nSync stopped: a generated file was edited by hand.\n");
+  for (const f of clashes) {
+    console.error(`  ${f.what}`);
+    console.error(`  ${f.fix}`);
+    if (f.safe) console.error(`  ${f.safe}`);
+    console.error("");
+  }
+  console.error(
+    "To overwrite the file(s) on purpose: npm run sync:wiki -- --force\n",
+  );
+  process.exit(1);
+}
+
+function recordState() {
+  for (const f of managed) {
+    if (!existsSync(f.path)) continue;
+    state.files[f.key] = sha256(f.slice(readFileSync(f.path, "utf8")));
+  }
+  writeFileSync(statePath, JSON.stringify(state, null, 2) + "\n");
+}
 
 /* ---------- job 1: supported cars, wiki -> site ---------- */
 
@@ -301,3 +405,8 @@ writeFileSync(
   ].join("\n"),
 );
 console.log(`car checker data -> ${checkerFile.split("zoompilot-wiki/")[1]} (${carsJson.length} cars)`);
+
+/* ---------- record fingerprints for the next run's guard ---------- */
+
+recordState();
+console.log("sync state -> scripts/sync-state.json");
