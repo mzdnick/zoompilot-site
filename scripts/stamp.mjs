@@ -22,7 +22,7 @@ const headers = process.env.GITHUB_TOKEN
   : {};
 
 const res = await fetch(
-  "https://api.github.com/repos/zoompilot/zoompilot/commits?per_page=1",
+  "https://api.github.com/repos/zoompilot/zoompilot/commits?sha=main&per_page=1",
   { headers },
 );
 if (!res.ok) {

@@ -210,7 +210,7 @@ function releaseMd(rel) {
       ? `## ${rel.date} — ${rel.title}`
       : `## ${rel.date}`;
   const lines = ["", head, ""];
-  if (rel.summary) lines.push(rel.summary, "");
+  if (rel.summary) lines.push(itemMd(rel.summary), "");
   for (const item of rel.items ?? []) {
     lines.push(`- ${itemMd(item.html)}`);
     for (const sub of item.sub ?? []) {
