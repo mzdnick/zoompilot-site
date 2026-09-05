@@ -273,39 +273,58 @@ const routePage = join(technicalDir, "route-library.md");
 
 const FULL_ROUTE = /([0-9a-f]{16})\/(\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2})/g;
 /* fleet shorthand: hex-ish tokens after "route(s)", optionally listed
- * with commas / + / "and". Tokens are validated against hex below, so
- * prose like "route ids" or "routes behind every number" is rejected —
- * but the fleet's own "be" / "fe" style refs pass. */
+ * with commas / + / "and". The group must end at a word boundary, so
+ * prose like "routes behind every number" cannot donate its hex prefix
+ * ("be") — but the fleet's own "be" / "fe" style refs still pass. */
 const ROUTE_TOKEN = "[0-9a-f]{2,16}";
 const SHORT_ROUTE = new RegExp(
   "\\broutes?\\s+(" +
     ROUTE_TOKEN +
     "((?:\\s*(?:,|\\+|and)\\s*)" +
     ROUTE_TOKEN +
-    ")*)",
+    ")*)\\b",
   "g",
 );
 /* made of hex letters but never a route */
 const REF_STOP = new Set(["id"]);
 
+/* Prose sentences of a technical page, each flagged with whether it sits
+ * under a "Tried and rejected" heading. Those bullets are one-line
+ * digests of claims the body already cites; they only earn their own
+ * row when they are the sole evidence for a ref. */
 function sentencesOf(text) {
-  const prose = [];
+  const out = [];
   let inFence = false;
-  for (const line of text.split("\n")) {
-    if (line.trim().startsWith("```")) {
-      inFence = !inFence;
-      continue;
+  let inRejected = false;
+  let current = null;
+  const flush = () => {
+    if (!current) return;
+    const blob = current.lines.join(" ").replace(/\s+/g, " ").trim();
+    for (const s of blob.split(/(?<=[.;])\s+/)) {
+      const t = s.trim();
+      if (t) out.push({ rejected: current.rejected, text: t });
     }
-    if (inFence) continue;
-    if (line.trim().startsWith("|")) continue;
-    if (line.trim().startsWith("#")) continue;
-    prose.push(line);
+    current = null;
+  };
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("```")) {
+      flush();
+      inFence = !inFence;
+    } else if (inFence) {
+      continue;
+    } else if (/^#{1,3}\s/.test(trimmed)) {
+      flush();
+      inRejected = /tried and rejected/i.test(trimmed);
+    } else if (trimmed.startsWith("|") || !trimmed) {
+      flush();
+    } else {
+      if (!current) current = { rejected: inRejected, lines: [] };
+      current.lines.push(line);
+    }
   }
-  return prose
-    .join(" ")
-    .replace(/\s+/g, " ")
-    .split(/(?<=[.;])\s+/)
-    .map((s) => s.trim());
+  flush();
+  return out;
 }
 
 function validShortRef(group) {
@@ -319,26 +338,39 @@ for (const name of readdirSync(technicalDir).sort()) {
   if (!statSync(path).isFile() || !name.endsWith(".md")) continue;
   if (name === "route-library.md") continue;
   if (name === "index.md") continue;
+  /* rejected.md is a digest of the other pages' Tried-and-rejected
+   * bullets; the library points at the primary pages instead. */
+  if (name === "rejected.md") continue;
   const text = readFileSync(path, "utf8");
   const seen = new Set();
+  const bodyRefs = new Set();
   for (const sentence of sentencesOf(text)) {
     const refs = new Set();
-    for (const m of sentence.matchAll(FULL_ROUTE)) {
+    for (const m of sentence.text.matchAll(FULL_ROUTE)) {
       refs.add(`${m[1]}/${m[2]}`);
     }
-    for (const m of sentence.matchAll(SHORT_ROUTE)) {
+    for (const m of sentence.text.matchAll(SHORT_ROUTE)) {
       if (validShortRef(m[1])) refs.add(m[1]);
     }
+    /* body sentences come first in file order, so a Tried-and-rejected
+     * bullet whose refs are all already cited from the body adds nothing */
+    const fresh = [...refs].filter((r) => !bodyRefs.has(r));
+    if (sentence.rejected && fresh.length === 0) continue;
     for (const ref of refs) {
-      const key = ref + "|" + sentence;
+      const key = ref + "|" + sentence.text;
       if (seen.has(key)) continue;
       seen.add(key);
       citations.push({
         ref,
         page: `technical/${name}`,
         context:
-          sentence.length > 160 ? sentence.slice(0, 157) + "…" : sentence,
+          sentence.text.length > 160
+            ? sentence.text.slice(0, 157) + "…"
+            : sentence.text,
       });
+    }
+    if (!sentence.rejected) {
+      for (const ref of refs) bodyRefs.add(ref);
     }
   }
 }
