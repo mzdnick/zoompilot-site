@@ -179,11 +179,12 @@ if (header.join() !== expected.join()) {
   throw new Error(`Unexpected table header: ${header.join(" | ")}`);
 }
 
-/* "✓" -> true, "—" -> false, "n/a" -> "n/a" */
+/* "✓" -> true, "—" -> false, "n/a" -> "n/a", "✓ with swap" -> "with swap" */
 function flag(cell) {
-  if (cell === "✓" || cell === "—" || cell === "n/a") {
-    return cell === "✓" ? true : cell === "—" ? false : "n/a";
-  }
+  if (cell === "✓") return true;
+  if (cell === "—") return false;
+  if (cell === "n/a") return "n/a";
+  if (cell === "✓ with swap") return "with swap";
   throw new Error(`Unrecognized capability cell: "${cell}"`);
 }
 

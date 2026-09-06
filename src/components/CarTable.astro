@@ -8,7 +8,7 @@ interface CapRow {
   year: string;
   stzNative: boolean | "n/a";
   stzSwap: boolean | "n/a";
-  alphaLong: boolean;
+  alphaLong: boolean | "n/a" | "with swap";
   torque: "native" | "with swap";
 }
 interface Props {
@@ -18,8 +18,14 @@ const { cars } = Astro.props;
 
 const mark = (v: boolean | "n/a") =>
   v === true ? "✓" : v === "n/a" ? "n/a" : "—";
-const capClass = (v: boolean | "n/a") =>
-  v === true ? "cap-yes" : v === "n/a" ? "cap-na" : "cap-no";
+const capClass = (v: boolean | "n/a" | "with swap") =>
+  v === true
+    ? "cap-yes"
+    : v === "with swap"
+      ? "cap-swap"
+      : v === "n/a"
+        ? "cap-na"
+        : "cap-no";
 
 /* the model cell shows only on the first row of each model group, so
  * the families read grouped like they do on the wiki */
@@ -49,7 +55,11 @@ let lastModel = "";
               <td>{c.year}</td>
               <td class={capClass(c.stzNative)}>{mark(c.stzNative)}</td>
               <td class={capClass(c.stzSwap)}>{mark(c.stzSwap)}</td>
-              <td class={capClass(c.alphaLong)}>{mark(c.alphaLong)}</td>
+              <td class={capClass(c.alphaLong)}>
+                {c.alphaLong === "with swap"
+                  ? (<>✓ <small>with swap</small></>)
+                  : mark(c.alphaLong)}
+              </td>
               <td class={c.torque === "native" ? "cap-yes" : "cap-swap"}>
                 {c.torque === "native" ? (
                   "✓"

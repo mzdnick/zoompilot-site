@@ -14,7 +14,7 @@
     "year": "2017–2021",
     "stzNative": false,
     "stzSwap": true,
-    "alphaLong": true,
+    "alphaLong": "with swap",
     "torque": "with swap"
   },
   {
@@ -23,7 +23,7 @@
     "year": "2021–2023",
     "stzNative": false,
     "stzSwap": true,
-    "alphaLong": true,
+    "alphaLong": "with swap",
     "torque": "with swap"
   },
   {
@@ -41,7 +41,7 @@
     "year": "2017–2018",
     "stzNative": false,
     "stzSwap": true,
-    "alphaLong": true,
+    "alphaLong": "with swap",
     "torque": "with swap"
   },
   {
@@ -50,7 +50,7 @@
     "year": "2017–2021",
     "stzNative": false,
     "stzSwap": true,
-    "alphaLong": true,
+    "alphaLong": "with swap",
     "torque": "with swap"
   }
 ]
