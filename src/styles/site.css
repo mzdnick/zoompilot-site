@@ -1215,6 +1215,7 @@ ol.log ul ul {
   font-size: 0.8rem;
   color: var(--dim);
   max-width: 42em;
+  white-space: pre-line;
 }
 
 /* ---------- support checker (section 06) ---------- */
