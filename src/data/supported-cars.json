@@ -1,32 +1,56 @@
 [
   {
     "car": "CX-5 2022–2025",
-    "status": "Full support",
-    "notes": "Steer-to-zero."
+    "model": "CX-5",
+    "year": "2022–2025",
+    "stzNative": true,
+    "stzSwap": "n/a",
+    "alphaLong": true,
+    "torque": "native"
   },
   {
     "car": "CX-5 2017–2021",
-    "status": "Supported",
-    "notes": "Runs on the stock steering motor and its stock envelope. No steer-to-zero until a 2022-25 CX-5 motor is swapped in."
+    "model": "CX-5",
+    "year": "2017–2021",
+    "stzNative": false,
+    "stzSwap": true,
+    "alphaLong": true,
+    "torque": "with swap"
   },
   {
     "car": "CX-9 2021–2023",
-    "status": "Supported",
-    "notes": "Steer-to-zero with EPS swap."
+    "model": "CX-9",
+    "year": "2021–2023",
+    "stzNative": false,
+    "stzSwap": true,
+    "alphaLong": true,
+    "torque": "with swap"
   },
   {
     "car": "CX-9 2016–2020",
-    "status": "Supported",
-    "notes": "Stock motor and stock envelope, like the CX-5 2017–2021 row. No steer-to-zero on the stock motor."
+    "model": "CX-9",
+    "year": "2016–2020",
+    "stzNative": false,
+    "stzSwap": true,
+    "alphaLong": false,
+    "torque": "with swap"
   },
   {
     "car": "Mazda 3 2017–2018",
-    "status": "Reported working",
-    "notes": "Community drives report it runs on the stock motor. Fewer test miles than the CX-5 and CX-9 rows."
+    "model": "Mazda 3",
+    "year": "2017–2018",
+    "stzNative": false,
+    "stzSwap": true,
+    "alphaLong": true,
+    "torque": "with swap"
   },
   {
     "car": "Mazda 6 2017–2021",
-    "status": "Reported working",
-    "notes": "Community-reported like the Mazda 3 row: stock motor, stock envelope."
+    "model": "Mazda 6",
+    "year": "2017–2021",
+    "stzNative": false,
+    "stzSwap": true,
+    "alphaLong": true,
+    "torque": "with swap"
   }
 ]

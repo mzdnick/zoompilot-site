@@ -1184,36 +1184,37 @@ ol.log ul ul {
   letter-spacing: -0.01em;
   white-space: nowrap;
 }
-.cartable td:last-child {
-  max-width: 30em;
-}
-.cartable .pill {
-  display: inline-block;
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  padding: 0.28rem 0.7rem;
+/* capability matrix: the flag columns center; the model/year stay left */
+.captable th:nth-child(n + 3),
+.captable td:nth-child(n + 3) {
+  text-align: center;
   white-space: nowrap;
+  padding-right: 1.1rem;
 }
-.pill-primary {
-  color: var(--cta-text);
-  background: linear-gradient(180deg, var(--paint-hi), var(--paint) 55%, var(--paint-lo));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
-}
-.pill-full {
+.cap-yes {
   color: var(--accent);
-  border: 1px solid var(--accent);
+  font-weight: 600;
 }
-.pill-supported {
-  color: var(--dim);
-  border: 1px solid var(--hair-strong);
+.cap-no {
+  color: var(--faint);
 }
-/* community-reported: a dashed border says "report, not verified" */
-.pill-reported {
+.cap-na {
+  color: var(--faint);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+.cap-swap {
+  color: var(--accent);
+}
+.cap-swap small {
   color: var(--dim);
-  border: 1px dashed var(--accent);
+  font-size: 0.72rem;
+}
+.cap-note {
+  margin-top: 0.85rem;
+  font-size: 0.8rem;
+  color: var(--dim);
+  max-width: 42em;
 }
 
 /* ---------- support checker (section 06) ---------- */

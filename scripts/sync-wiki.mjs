@@ -154,9 +154,11 @@ const outFile = join(root, "src", "data", "supported-cars.json");
 
 const md = readFileSync(wikiDoc, "utf8");
 
-/* first markdown table in the file: | Model | Year | Status | Notes |.
- * A blank Model cell repeats the model above it, so grouped rows stay
- * grouped on the wiki but flatten to one "Model Year" car string here. */
+/* first markdown table in the file: the capability matrix
+ * | Model | Year | Native steer-to-zero | Steer-to-zero with swap |
+ * | Alpha longitudinal | Pre-seeded torque |. A blank Model cell repeats
+ * the model above it, so grouped rows stay grouped on the wiki but
+ * flatten to one "Model Year" car string here. */
 const rows = md
   .split("\n")
   .filter((line) => line.trim().startsWith("|"));
@@ -165,21 +167,48 @@ if (rows.length < 3) {
   throw new Error(`No markdown table found in ${wikiDoc}`);
 }
 const header = rows[0].split("|").map((c) => c.trim()).filter(Boolean);
-const expected = ["Model", "Year", "Status", "Notes"];
+const expected = [
+  "Model",
+  "Year",
+  "Native steer-to-zero",
+  "Steer-to-zero with swap",
+  "Alpha longitudinal",
+  "Pre-seeded torque",
+];
 if (header.join() !== expected.join()) {
   throw new Error(`Unexpected table header: ${header.join(" | ")}`);
 }
-/* rows[1] is the | --- | --- | --- | --- | separator */
+
+/* "✓" -> true, "—" -> false, "n/a" -> "n/a" */
+function flag(cell) {
+  if (cell === "✓" || cell === "—" || cell === "n/a") {
+    return cell === "✓" ? true : cell === "—" ? false : "n/a";
+  }
+  throw new Error(`Unrecognized capability cell: "${cell}"`);
+}
+
+/* rows[1] is the table separator */
 const cars = [];
 let model = "";
 for (const line of rows.slice(2)) {
   const cells = line.split("|").map((c) => c.trim()).filter((_, i, a) => {
-    /* a line "| a | b | c | d |" splits into ["", " a ", " b ", " c ", " d ", ""] */
+    /* a line "| a | b |" splits into ["", " a ", " b ", ""] */
     return i > 0 && i < a.length - 1 ? true : false;
   });
-  if (cells.length !== 4) throw new Error(`Bad row: ${line}`);
+  if (cells.length !== 6) throw new Error(`Bad row: ${line}`);
   if (cells[0]) model = cells[0];
-  cars.push({ car: `${model} ${cells[1]}`, status: cells[2], notes: cells[3] });
+  if (cells[5] !== "✓" && cells[5] !== "✓ with swap") {
+    throw new Error(`Unrecognized pre-seeded torque cell: "${cells[5]}"`);
+  }
+  cars.push({
+    car: `${model} ${cells[1]}`,
+    model,
+    year: cells[1],
+    stzNative: flag(cells[2]),
+    stzSwap: flag(cells[3]),
+    alphaLong: flag(cells[4]),
+    torque: cells[5] === "✓" ? "native" : "with swap",
+  });
 }
 
 writeFileSync(outFile, JSON.stringify(cars, null, 2) + "\n");
