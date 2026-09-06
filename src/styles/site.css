@@ -1198,10 +1198,10 @@ ol.log ul ul {
 .cap-no {
   color: var(--faint);
 }
-.cap-na {
-  color: var(--faint);
-  font-family: var(--mono);
-  font-size: 0.78rem;
+/* unvalidated: distinct from both — and ✓, points at the footnote */
+.cap-unknown {
+  color: var(--dim);
+  font-weight: 700;
 }
 .cap-swap {
   color: var(--accent);

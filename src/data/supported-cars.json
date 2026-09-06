@@ -3,54 +3,42 @@
     "car": "CX-5 2022–2025",
     "model": "CX-5",
     "year": "2022–2025",
-    "stzNative": true,
-    "stzSwap": "n/a",
-    "alphaLong": true,
-    "torque": "native"
+    "stz": true,
+    "alphaLong": true
   },
   {
     "car": "CX-5 2017–2021",
     "model": "CX-5",
     "year": "2017–2021",
-    "stzNative": false,
-    "stzSwap": true,
-    "alphaLong": "with swap",
-    "torque": "with swap"
+    "stz": "with swap",
+    "alphaLong": "with swap"
   },
   {
     "car": "CX-9 2021–2023",
     "model": "CX-9",
     "year": "2021–2023",
-    "stzNative": false,
-    "stzSwap": true,
-    "alphaLong": "with swap",
-    "torque": "with swap"
+    "stz": "with swap",
+    "alphaLong": "with swap"
   },
   {
     "car": "CX-9 2016–2020",
     "model": "CX-9",
     "year": "2016–2020",
-    "stzNative": false,
-    "stzSwap": true,
-    "alphaLong": false,
-    "torque": "with swap"
+    "stz": "with swap",
+    "alphaLong": false
   },
   {
     "car": "Mazda 3 2017–2018",
     "model": "Mazda 3",
     "year": "2017–2018",
-    "stzNative": false,
-    "stzSwap": true,
-    "alphaLong": "with swap",
-    "torque": "with swap"
+    "stz": "with swap",
+    "alphaLong": "unknown"
   },
   {
     "car": "Mazda 6 2017–2021",
     "model": "Mazda 6",
     "year": "2017–2021",
-    "stzNative": false,
-    "stzSwap": true,
-    "alphaLong": "with swap",
-    "torque": "with swap"
+    "stz": "with swap",
+    "alphaLong": "unknown"
   }
 ]
