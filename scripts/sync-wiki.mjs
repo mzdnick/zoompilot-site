@@ -191,16 +191,38 @@ for (const line of rows.slice(2)) {
   });
 }
 
-/* the italic paragraph right after the table is the matrix legend —
- * the page-level note both surfaces render under the table */
+/* the legend right after the table is the matrix note: a
+ * "- **✓** — meaning" list, then a trailing plain sentence. The wiki
+ * renders the list; the site renders the collected lines as pre-line
+ * text under the table. */
 const lines = md.split("\n");
-const noteLine = lines
-  .slice(lines.indexOf(rows[rows.length - 1]) + 1)
-  .find((l) => /^\*.*\*$/.test(l.trim()));
-if (!noteLine) {
-  throw new Error(`No italic legend found after the table in ${wikiDoc}`);
+const afterTable = lines.slice(lines.indexOf(rows[rows.length - 1]) + 1);
+const items = [];
+let trailing = "";
+for (const raw of afterTable) {
+  const t = raw.trim();
+  if (!t) continue;
+  if (t.startsWith("#")) break; // next section ends the legend
+  if (t.startsWith("- ")) {
+    items.push(t.slice(2));
+  } else if (items.length && /^\s{2,}\S/.test(raw)) {
+    items[items.length - 1] += " " + t; // wrapped continuation line
+  } else {
+    trailing = trailing ? `${trailing} ${t}` : t;
+  }
 }
-const note = noteLine.trim().slice(1, -1);
+if (!items.length) {
+  throw new Error(`No legend list found after the table in ${wikiDoc}`);
+}
+const cleanLegend = (s) =>
+  s
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+const note = [...items.map(cleanLegend), cleanLegend(trailing)]
+  .filter(Boolean)
+  .join("\n");
 
 writeFileSync(
   outFile,
