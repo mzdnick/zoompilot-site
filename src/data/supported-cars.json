@@ -1,13 +1,13 @@
 [
   {
     "car": "CX-5 2022–2025",
-    "status": "Full support, primary target",
-    "notes": "Every zoompilot feature. Steering works down to 0 mph."
+    "status": "Full support",
+    "notes": "Steer-to-zero."
   },
   {
     "car": "CX-9 2021–2023",
-    "status": "Full support",
-    "notes": "Runs on the stock steering envelope with its own factory-matched specs. The 2022-25 CX-5 EPS swap adds steer-to-zero and alpha longitudinal. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5."
+    "status": "Supported",
+    "notes": "Steer-to-zero with EPS swap."
   },
   {
     "car": "Older Mazdas with a swapped 2022-25 CX-5 EPS motor",
