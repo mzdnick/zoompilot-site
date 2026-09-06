@@ -5,19 +5,14 @@
     "notes": "Steer-to-zero."
   },
   {
-    "car": "CX-9 2021–2023",
-    "status": "Supported",
-    "notes": "Steer-to-zero with EPS swap."
-  },
-  {
-    "car": "Older Mazdas with a swapped 2022-25 CX-5 EPS motor",
-    "status": "Supported",
-    "notes": "The motor is identified by its firmware during fingerprinting. Steering works down to 0 mph, and alpha longitudinal is enabled — radar and AEB off while it is on."
-  },
-  {
     "car": "CX-5 2017–2021",
     "status": "Supported",
     "notes": "Runs on the stock steering motor and its stock envelope. No steer-to-zero until a 2022-25 CX-5 motor is swapped in."
+  },
+  {
+    "car": "CX-9 2021–2023",
+    "status": "Supported",
+    "notes": "Steer-to-zero with EPS swap."
   },
   {
     "car": "CX-9 2016–2020",

@@ -154,7 +154,9 @@ const outFile = join(root, "src", "data", "supported-cars.json");
 
 const md = readFileSync(wikiDoc, "utf8");
 
-/* first markdown table in the file: | Car | Status | Notes | */
+/* first markdown table in the file: | Model | Year | Status | Notes |.
+ * A blank Model cell repeats the model above it, so grouped rows stay
+ * grouped on the wiki but flatten to one "Model Year" car string here. */
 const rows = md
   .split("\n")
   .filter((line) => line.trim().startsWith("|"));
@@ -163,19 +165,22 @@ if (rows.length < 3) {
   throw new Error(`No markdown table found in ${wikiDoc}`);
 }
 const header = rows[0].split("|").map((c) => c.trim()).filter(Boolean);
-const expected = ["Car", "Status", "Notes"];
+const expected = ["Model", "Year", "Status", "Notes"];
 if (header.join() !== expected.join()) {
   throw new Error(`Unexpected table header: ${header.join(" | ")}`);
 }
-/* rows[1] is the | --- | --- | --- | separator */
-const cars = rows.slice(2).map((line) => {
+/* rows[1] is the | --- | --- | --- | --- | separator */
+const cars = [];
+let model = "";
+for (const line of rows.slice(2)) {
   const cells = line.split("|").map((c) => c.trim()).filter((_, i, a) => {
-    /* a line "| a | b | c |" splits into ["", " a ", " b ", " c ", ""] */
+    /* a line "| a | b | c | d |" splits into ["", " a ", " b ", " c ", " d ", ""] */
     return i > 0 && i < a.length - 1 ? true : false;
   });
-  if (cells.length !== 3) throw new Error(`Bad row: ${line}`);
-  return { car: cells[0], status: cells[1], notes: cells[2] };
-});
+  if (cells.length !== 4) throw new Error(`Bad row: ${line}`);
+  if (cells[0]) model = cells[0];
+  cars.push({ car: `${model} ${cells[1]}`, status: cells[2], notes: cells[3] });
+}
 
 writeFileSync(outFile, JSON.stringify(cars, null, 2) + "\n");
 console.log(`synced ${cars.length} cars -> ${outFile.replace(root + "/", "")}`);
