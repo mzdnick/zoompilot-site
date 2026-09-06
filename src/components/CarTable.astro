@@ -13,8 +13,9 @@ interface CapRow {
 }
 interface Props {
   cars: CapRow[];
+  note: string;
 }
-const { cars } = Astro.props;
+const { cars, note } = Astro.props;
 
 const capClass = (v: boolean | "with swap" | "unknown") =>
   v === true
@@ -68,10 +69,4 @@ let lastModel = "";
     </tbody>
   </table>
 </div>
-<p class="cap-note">
-  Radar and AEB are off while alpha longitudinal is on. The pre-2021 CX-9
-  keeps it off even with the swap: its radar does not publish the track
-  frames the port stands in for. A ? marks what the port is built to grant
-  but has not been validated on that platform yet — the Mazda 3 and Mazda 6
-  are community-reported only, with fewer test miles than the CX-5 and CX-9.
-</p>
+<p class="cap-note">{note}</p>

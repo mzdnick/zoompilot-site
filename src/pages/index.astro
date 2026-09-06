@@ -244,7 +244,7 @@ const appLd = {
         title="additional Mazdas covered"
         intro="zoompilot runs on every supported Mazda platform — CX-5, CX-9, Mazda 3, and Mazda 6 — and steers to zero wherever a 2022-25 CX-5 electric power steering (EPS) motor is fitted, factory or swapped. The table is synced from the wiki's supported-cars page."
       />
-      <CarTable cars={cars} />
+      <CarTable note={cars.note} cars={cars.cars} />
       <CarChecker />
       <p class="wiki-more">
         EPS-swap detection and the upstream support tables:
