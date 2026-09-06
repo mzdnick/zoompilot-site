@@ -53,7 +53,7 @@ jobs:
                 cat .settings-changed
                 echo '```'
                 echo
-                echo "After the wiki catches up this file is baseline again. Fix: re-review \`docs/settings/index.md\` in zoompilot/wiki, then run \`contrib/gen-settings-data.py\` and regenerate the settings captures if a panel changed."
+                echo "After the wiki catches up this file is baseline again. Fix: update \`docs/assets/js/settings-data.js\` in zoompilot/wiki to match, and regenerate the settings captures if a panel changed."
               } > body.md
               gh issue create --title "Settings drift on upstream main" --body-file body.md
               git config user.name "release-watch"
@@ -78,7 +78,7 @@ jobs:
           git push origin "$BR"
           BODY="Upstream \`version.h\` reports **$VER**, but the changelog's newest entry is older. This PR adds a skeleton entry at the top of \`src/data/changelog.js\`: fill in the real notes, adjust the date, and merge — merging deploys the site."
           if [ -s .settings-changed ]; then
-            BODY="$BODY"$'\n\n'"## Settings watch"$'\n\n'"Upstream's settings definitions also changed:"$'\n\n```'"$(cat .settings-changed)"'```'"$'\n\n'"After merging: re-review the wiki's \`docs/settings/index.md\`, then run \`contrib/gen-settings-data.py\` in zoompilot/wiki."
+            BODY="$BODY"$'\n\n'"## Settings watch"$'\n\n'"Upstream's settings definitions also changed:"$'\n\n```'"$(cat .settings-changed)"'```'"$'\n\n'"After merging: update \`docs/assets/js/settings-data.js\` in zoompilot/wiki to match, and regenerate the settings captures if a panel changed."
           fi
           BODY="$BODY"$'\n\n'"## AI Usage"$'\n\n'"Disclaimer: GLM-5.3-Flash by Z.ai was used to help develop, debug, and document this submission. All changes were reviewed and validated by a human."
           gh pr create --head "$BR" --title "New upstream release: $VER" --body "$BODY"
