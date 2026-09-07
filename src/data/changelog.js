@@ -30,7 +30,7 @@ export const repo = {
  * GitHub API and keeps this value when offline. */
 export const build = { sha: "ca095f4f96", date: "2026-09-05" };
 
-/* 2026.09.05-10 republishes -9 unchanged (a rebuild), so the two
+/* -9, -10 and -11 republish the same notes (rebuilds), so the three
  * entries share one set of notes. */
 const steerV2Notes = {
   title: "New steering tune, Smart Cruise reimplemented, Alpha Longitudinal stop-and-go fixed",
@@ -196,6 +196,7 @@ items: [
 };
 
 export const releases = [
+  { ver: "2026.09.05-11", date: "2026-09-05", ...steerV2Notes },
   { ver: "2026.09.05-10", date: "2026-09-05", ...steerV2Notes },
   { ver: "2026.09.05-9", date: "2026-09-05", ...steerV2Notes },
   {

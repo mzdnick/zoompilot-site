@@ -1,11 +1,11 @@
 {
   "version": 1,
   "files": {
-    "site:src/data/supported-cars.json": "6a4ecc0358ec1c125dee5e8ae31d8c539fd31426b12265e242444d5b244c6b61",
-    "wiki:docs/releases/changelog.md": "115cdd4acbe9621cd7901220be4f2e0484c341871d49bec0d9c9bc062b381721",
+    "site:src/data/supported-cars.json": "e19bda878a36d518322b9249c1d09d42dff719c3f0a9721dfd20782464d254ce",
+    "wiki:docs/releases/changelog.md": "b948c0bd08035afc6a05101f20ca80e9629dfd03337b3f01ce055ba32e2ab2ce",
     "wiki:docs/assets/steering-torque.svg": "34cda590205e0a17a8ced204d012279fa7cac27153098e4db144bd99c3582009",
     "wiki:docs/assets/steering-torque-data.js": "e1b0f78d888baaabfff60b904604eca004b38b18ed87ca0e9968d1d1b0330dc0",
-    "wiki:docs/technical/route-library.md": "2ca59ff562e3b8d74b4ca372a52703887617bfefc43cca729f4cf65315b46395",
+    "wiki:docs/technical/route-library.md": "5317b113c812ea62b34ecbe601446f861b599b339d5d920e5b0db5f0971dadc1",
     "wiki:assets/js/car-checker-data.js": "980665a64cfe4ed21c33d9409847bdffb439cacce4b0975d16fa8e24bbcec247"
   }
 }

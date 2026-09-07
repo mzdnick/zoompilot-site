@@ -1,5 +1,5 @@
 {
-  "note": "✓ — works as the car ships.\n✓ with swap — works once a 2022-25 CX-5 EPS motor is swapped in. See the EPS swap guide.\n— — a hard limit. The pre-2021 CX-9's radar does not publish the track data the port stands in for, so alpha longitudinal stays off even with the swap.\n? — expected to work, not yet validated on that platform. The Mazda 3 and Mazda 6 are community-reported only, with fewer test miles than the CX-5 and CX-9.\nWhile alpha longitudinal is on, the stock radar and AEB are off.",
+  "note": "✓ — works as the car ships.\n✓ with swap — works once a 2022-25 CX-5 EPS motor is swapped in. See EPS swap.\n— — a hard limit. The pre-2021 CX-9's radar does not publish the track data the port stands in for, so alpha longitudinal stays off even with the swap.\n? — expected to work, not yet validated on that platform. The Mazda 3 and Mazda 6 are community-reported only, with fewer test miles than the CX-5 and CX-9.\nWhile alpha longitudinal is on, the stock radar and AEB are off.",
   "cars": [
     {
       "car": "CX-5 2022–2025",
