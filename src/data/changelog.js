@@ -196,6 +196,15 @@ items: [
 };
 
 export const releases = [
+  {
+    ver: "2026.09.07-13",
+    date: "2026-09-07",
+    items: [
+      {
+        html: `<b>TODO:</b> Fill in the release notes for 2026.09.07-13.`,
+      },
+    ],
+  },
   { ver: "2026.09.05-11", date: "2026-09-05", ...steerV2Notes },
   { ver: "2026.09.05-10", date: "2026-09-05", ...steerV2Notes },
   { ver: "2026.09.05-9", date: "2026-09-05", ...steerV2Notes },
