@@ -2,7 +2,7 @@
 // Supported cars as a capability matrix, synced from the wiki's
 // supported-cars.md. The sync script (scripts/sync-wiki.mjs) owns the
 // data; this component only renders the flags and carries the footnote.
-// Cell vocabulary: ✓ (native), ✓ with swap, — (not available), ? (built
+// Cell vocabulary: ✓ (native), with swap, — (not available), ? (built
 // to work, not yet validated on that platform).
 interface CapRow {
   car: string;
@@ -26,7 +26,7 @@ const capClass = (v: boolean | "with swap" | "unknown") =>
         ? "cap-unknown"
         : "cap-no";
 const capText = (v: boolean | "with swap" | "unknown") =>
-  v === true ? "✓" : v === "unknown" ? "?" : "—";
+  v === true ? "✓" : v === "with swap" ? "with swap" : v === "unknown" ? "?" : "—";
 
 /* the model cell shows only on the first row of each model group, so
  * the families read grouped like they do on the wiki */
@@ -52,16 +52,8 @@ let lastModel = "";
             <tr>
               <th scope="row">{showModel ? c.model : ""}</th>
               <td>{c.year}</td>
-              <td class={capClass(c.stz)}>
-                {c.stz === "with swap"
-                  ? (<>✓ <small>with swap</small></>)
-                  : capText(c.stz)}
-              </td>
-              <td class={capClass(c.alphaLong)}>
-                {c.alphaLong === "with swap"
-                  ? (<>✓ <small>with swap</small></>)
-                  : capText(c.alphaLong)}
-              </td>
+              <td class={capClass(c.stz)}>{capText(c.stz)}</td>
+              <td class={capClass(c.alphaLong)}>{capText(c.alphaLong)}</td>
             </tr>
           );
         })

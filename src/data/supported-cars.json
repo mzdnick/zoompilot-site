@@ -1,5 +1,5 @@
 {
-  "note": "✓ — works as the car ships.\n✓ with swap — works once a 2022-25 CX-5 EPS motor is swapped in. See EPS swap.\n? — expected to work, not yet validated on that platform. The Mazda 3 and Mazda 6 are community-reported only, with fewer test miles than the CX-5 and CX-9.\nAlpha longitudinal includes stop-and-go, so it needs the same steering motor as the steer-to-zero column. On the swapped cars, its ✓ means once the swap is in. While alpha longitudinal is on, the stock radar and automatic emergency braking (AEB) are off.",
+  "note": "✓ — works as the car ships.\nwith swap — works once a 2022-25 CX-5 EPS motor is swapped in. See EPS swap.\n? — expected to work, not yet validated on that platform. The Mazda 3 and Mazda 6 are community-reported only, with fewer test miles than the CX-5 and CX-9.\nAlpha longitudinal includes stop-and-go, so it's recommended to have an EPS capable of steering to a standstill. On a stock older EPS, the steering stops below about 28 mph (45 kph) — the motor's low-speed lockout. While alpha longitudinal is on, the stock radar and automatic emergency braking (AEB) are off.",
   "cars": [
     {
       "car": "CX-5 2022–2025",

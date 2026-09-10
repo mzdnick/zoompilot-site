@@ -1,7 +1,7 @@
 {
   "version": 1,
   "files": {
-    "site:src/data/supported-cars.json": "c9e70c18e25e9ca180d87b2f130cb62ec985cf40b568e709141f51e64fc9b39c",
+    "site:src/data/supported-cars.json": "a4f8ec0d463ffcda04db9206ac9c49a3237b74d6f539dc46b1d4036fb88a0f1f",
     "wiki:docs/releases/changelog.md": "b948c0bd08035afc6a05101f20ca80e9629dfd03337b3f01ce055ba32e2ab2ce",
     "wiki:docs/assets/steering-torque.svg": "34cda590205e0a17a8ced204d012279fa7cac27153098e4db144bd99c3582009",
     "wiki:docs/assets/steering-torque-data.js": "e1b0f78d888baaabfff60b904604eca004b38b18ed87ca0e9968d1d1b0330dc0",
