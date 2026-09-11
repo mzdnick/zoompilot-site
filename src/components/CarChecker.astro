@@ -13,6 +13,7 @@ import { repo } from "../data/changelog.js";
       <span>model</span>
       <select id="ck-model">
         <option value="cx5" selected>CX-5</option>
+        <option value="cx8">CX-8</option>
         <option value="cx9">CX-9</option>
         <option value="mazda3">Mazda 3</option>
         <option value="mazda6">Mazda 6</option>
@@ -45,6 +46,7 @@ import { repo } from "../data/changelog.js";
     }
   > = {
     cx5: { label: "the CX-5", years: range(2013, 2026), full: [2022, 2025], stock: [2017, 2021] },
+    cx8: { label: "the CX-8", years: range(2017, 2024), full: [2023, 2023] },
     cx9: { label: "the CX-9", years: range(2016, 2024), full: [2021, 2023], stock: [2016, 2020] },
     mazda3: { label: "the Mazda 3", years: range(2017, 2019), reported: [2017, 2018] },
     mazda6: { label: "the Mazda 6", years: range(2017, 2022), reported: [2017, 2021] },
@@ -97,7 +99,9 @@ import { repo } from "../data/changelog.js";
         body:
           modelSel.value === "cx5"
             ? "Every zoompilot feature, and steering works down to 0 mph. This is the primary development target."
-            : "Full support with factory-matched specs. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5.",
+            : modelSel.value === "cx8"
+              ? "Steering works down to 0 mph on the factory steering motor. Alpha longitudinal is expected to work but is not validated yet."
+              : "Full support with factory-matched specs. Speed-dependent torque needs more learning time, because the starting seeds come from a CX-5.",
       };
     }
     if (m.stock && year >= m.stock[0] && year <= m.stock[1]) {
